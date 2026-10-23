@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/iconos/icon-192.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Atlas 3D de Arquitectura de Software</title>
+    <meta name="theme-color" content="#0b1220" />
+    <link rel="manifest" href="/manifest.json" />
+  </head>
+  <body>
+    <section class="visor-zona">
+      <div class="visor-barra">
+        <button type="button" id="btn-orientacion">📱 Rotar con el teléfono</button>
+        <button type="button" id="btn-calibrar" disabled>Calibrar</button>
+        <button type="button" id="btn-camara">📷 Cámara de fondo</button>
+        <button type="button" id="btn-ar" disabled>🥽 Ver en AR</button>
+        <span id="lectura-visor" class="lectura-visor"></span>
+      </div>
+      <p id="aviso-visor" class="aviso-visor" role="status" hidden></p>
+      <div id="visor" class="visor">
+        <video id="fondo-camara" class="fondo-camara" playsinline muted hidden></video>
+      </div>
+      <p id="estado-ar" class="estado-ar" role="status">Comprobando realidad aumentada…</p>
+      <details class="diag-ar">
+        <summary>Diagnóstico de realidad aumentada</summary>
+        <pre id="diag-ar" class="diag-ar-texto"></pre>
+        <button type="button" id="btn-recomprobar">Comprobar de nuevo</button>
+      </details>
+      <p class="aviso-demo">Visor de prueba: un cubo, no un modelo real. Con la cámara de fondo NO es realidad aumentada: el cubo solo se dibuja encima del video. El botón «Ver en AR» abre una sesión WebXR real, pero el cubo aún no se apoya en ninguna superficie.</p>
+    </section>
+    <section class="descargas-zona" aria-labelledby="titulo-descargas">
+      <h2 id="titulo-descargas">Uso sin conexión</h2>
+      <div class="descargas-barra">
+        <button type="button" id="btn-avisos">🔔 Activar avisos</button>
+        <button type="button" id="btn-descargar">⬇ Descargar fichas para usar sin conexión</button>
+        <span id="estado-avisos" class="estado-avisos"></span>
+      </div>
+      <progress id="progreso-descarga" max="3" value="0" hidden></progress>
+      <p id="estado-descarga" class="estado-descarga" role="status"></p>
+    </section>
+    <div id="xr-overlay" class="xr-overlay">
+      <p id="xr-estado">Sesión de realidad aumentada activa</p>
+      <button type="button" id="btn-salir-ar">Salir de AR</button>
+    </div>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

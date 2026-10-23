@@ -1,0 +1,40 @@
+Atlas 3D de Arquitectura de Software — checkpoint al cierre de la Sesión 38
+Electiva - PWA · UPTC (Sub-bloque B)
+
+Qué es esto
+-----------
+El Atlas 3D con una primera SESIÓN DE REALIDAD AUMENTADA (WebXR immersive-ar).
+Es el PUNTO DE PARTIDA de la Sesión 39 (hit-test: apoyar el objeto en una
+superficie real y anclarlo).
+
+Novedades de la Sesión 38
+--------------------------
+  src/xr.ts        diagnosticarAR()/detectarSoporteAR(), pedirSesionAR(), mensajes de error
+  src/visor.ts     entrarEnAR(): render con setAnimationLoop, espacio "local",
+                   fondo transparente, cubo a ~40 cm y 1,5 m delante
+  src/main.ts      botón «Ver en AR»: apaga cámara y sensores, pide la sesión
+                   dentro del clic, y restaura el visor al terminar
+  index.html       botón, línea de estado, diagnóstico («Comprobar de nuevo») y overlay DOM con «Salir de AR»
+  src/style.css    reglas del overlay (.xr-overlay, :xr-overlay)
+
+Cómo probarlo
+--------------
+  npm install
+  npm run build        (compila src/sw.ts y la app)
+  npm run preview      → http://localhost:4173
+
+  En un escritorio el botón queda deshabilitado con el motivo (es lo correcto).
+  Abre «Diagnóstico de realidad aumentada» bajo el visor para ver qué comprobación
+  falló. Con el emulador (extensión Immersive Web Emulator): actívalo con su icono
+  en esta pestaña, elige Meta Quest 3 en DevTools → WebXR y pulsa «Comprobar de nuevo».
+  Para ver AR de verdad hace falta un teléfono Android con ARCore y Chrome,
+  sirviendo la app por HTTPS (la guía explica cómo) o con depuración USB.
+
+Limitaciones
+------------
+  - El cubo se coloca en una posición FIJA respecto a donde empezó la sesión;
+    NO se apoya en el piso ni en una mesa (eso es la Sesión 39).
+  - No funciona en iPhone: Safari no ofrece WebXR immersive-ar.
+  - Un emulador comprueba el código, no sustituye a un teléfono con ARCore.
+
+UPTC · Facultad de Ingeniería · Electiva - PWA
