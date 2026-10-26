@@ -378,14 +378,40 @@ function ayudaAR(e: EstadoAR): string {
   }
 }
 
-function mostrarEstadoAR(e: EstadoAR): void {
-  xrEstado.textContent = ayudaAR(e);
+// Cada cambio del texto del overlay obliga al navegador a volver a dibujarlo
+// encima de la cámara, y eso cuesta. Por eso: (1) solo se escribe si el texto
+// cambió y (2) como máximo cada 200 ms (los gestos avisan decenas de veces por segundo).
+const INTERVALO_OVERLAY_MS = 200;
+let ultimoPintado = 0;
+let pendienteAR: EstadoAR | null = null;
+let temporizadorAR = 0;
+
+function pintarEstadoAR(e: EstadoAR): void {
   const si = (v: boolean) => (v ? "sí" : "no");
   const { x, y, z } = e.posicion;
   const pos = e.fase === "colocado" ? `(${x.toFixed(2)}, ${y.toFixed(2)}, ${z.toFixed(2)}) m` : "—";
-  xrDatos.textContent =
+  const ayuda = ayudaAR(e);
+  const datos =
     `hit-test: ${si(e.hitTest)} · anclas: ${si(e.anclas)} · anclado: ${si(e.anclado)} · ` +
     `fase: ${e.fase} · escala: ${e.escala.toFixed(2)} · giro: ${e.giroGrados}° · pos: ${pos}`;
+  if (xrEstado.textContent !== ayuda) xrEstado.textContent = ayuda;
+  if (xrDatos.textContent !== datos) xrDatos.textContent = datos;
+}
+
+function mostrarEstadoAR(e: EstadoAR): void {
+  if (performance.now() - ultimoPintado >= INTERVALO_OVERLAY_MS) {
+    ultimoPintado = performance.now();
+    pintarEstadoAR(e);
+    return;
+  }
+  pendienteAR = e; // se pintará el último estado cuando venza el intervalo
+  if (temporizadorAR) return;
+  temporizadorAR = window.setTimeout(() => {
+    temporizadorAR = 0;
+    ultimoPintado = performance.now();
+    if (pendienteAR) pintarEstadoAR(pendienteAR);
+    pendienteAR = null;
+  }, INTERVALO_OVERLAY_MS);
 }
 
 btnAR.addEventListener("click", async () => {

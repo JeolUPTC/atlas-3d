@@ -50,6 +50,8 @@ export interface OpcionesAR {
 const ESCALA_INICIAL = 0.25; // el cubo de 1,6 m queda en 40 cm
 const ESCALA_MIN = 0.1;
 const ESCALA_MAX = 1;
+const CADA_CUANTOS_FOTOGRAMAS = 2; // el hit-test se consulta un fotograma de cada dos: basta para una retícula fluida
+const CONSULTAS_SIN_IMPACTO = 8; // consultas seguidas sin superficie antes de ocultar la retícula (evita parpadeos)
 const MITAD = 0.8; // medio cubo: para que apoye la base (y no el centro) en la superficie
 
 export function crearVisor(contenedor: HTMLElement): Visor {
@@ -271,13 +273,16 @@ export function crearVisor(contenedor: HTMLElement): Visor {
     });
 
     // ── Bucle: cada fotograma XR ──
+    let cuadro = 0; // cuenta fotogramas para consultar el hit-test solo uno de cada dos
+    let sinImpacto = 0; // consultas seguidas sin superficie
     renderer.setAnimationLoop((_t, frame) => {
       const referencia = renderer.xr.getReferenceSpace();
       if (frame && referencia) {
-        if (fuente) {
+        if (fuente && cuadro++ % CADA_CUANTOS_FOTOGRAMAS === 0) {
           const impactos = frame.getHitTestResults(fuente);
           const pose = impactos.length ? impactos[0].getPose(referencia) : null;
           if (pose) {
+            sinImpacto = 0;
             reticula.visible = true;
             reticula.matrix.fromArray(pose.transform.matrix);
             ultimoImpacto = pose.transform;
@@ -285,7 +290,8 @@ export function crearVisor(contenedor: HTMLElement): Visor {
               fase = "listo";
               avisar();
             }
-          } else {
+          } else if (++sinImpacto >= CONSULTAS_SIN_IMPACTO) {
+            // Una superficie que aparece y desaparece cada fotograma haría parpadear el texto del overlay.
             reticula.visible = false;
             ultimoImpacto = null;
             if (fase === "listo") {
