@@ -41,7 +41,10 @@ export interface EstadoAR extends CapacidadesAR {
   posicion: { x: number; y: number; z: number };
   /** Diagnóstico: cuántas veces se preguntó al hit-test y cuántas respondió con una superficie. */
   consultas: number;
-  impactos: number;
+  resultados: number; // consultas en que el sistema devolvió algo
+  impactos: number; // consultas con una pose utilizable
+  /** true si pasaron varios segundos sin superficie: el toque ya coloca delante de la mirada. */
+  sinSuperficie: boolean;
 }
 
 export interface OpcionesAR {
@@ -54,6 +57,7 @@ const ESCALA_INICIAL = 0.25; // el cubo de 1,6 m queda en 40 cm
 const ESCALA_MIN = 0.1;
 const ESCALA_MAX = 1;
 const CADA_CUANTOS_FOTOGRAMAS = 2; // el hit-test se consulta un fotograma de cada dos: basta para una retícula fluida
+const MS_HASTA_PLAN_B = 6000; // sin superficie tanto tiempo: se avisa y el toque coloca delante de la mirada
 const CONSULTAS_SIN_IMPACTO = 8; // consultas seguidas sin superficie antes de ocultar la retícula (evita parpadeos)
 const MITAD = 0.8; // medio cubo: para que apoye la base (y no el centro) en la superficie
 
@@ -141,7 +145,10 @@ export function crearVisor(contenedor: HTMLElement): Visor {
     let ancla: XRAnchor | null = null;
     let escala = ESCALA_INICIAL;
     let consultas = 0;
+    let resultados = 0;
     let impactosVistos = 0;
+    let sinSuperficie = false;
+    let ultimaPose = performance.now(); // cuándo fue la última vez que el hit-test encontró algo
     let ultimoImpacto: XRRigidTransform | null = null; // pose de la superficie bajo el centro de la pantalla
 
     const estado = (): EstadoAR => {
@@ -155,7 +162,9 @@ export function crearVisor(contenedor: HTMLElement): Visor {
         giroGrados: ((aGrados(grupo.rotation.y) % 360) + 360) % 360,
         posicion: { x: p.x, y: p.y, z: p.z },
         consultas,
+        resultados,
         impactos: impactosVistos,
+        sinSuperficie,
       };
     };
     const avisar = () => opciones.alCambiar(estado());
@@ -187,7 +196,13 @@ export function crearVisor(contenedor: HTMLElement): Visor {
     if (caps.hitTest) {
       try {
         const espacioViewer = await sesion.requestReferenceSpace("viewer");
-        fuente = (await sesion.requestHitTestSource?.({ space: espacioViewer })) ?? null;
+        try {
+          // «plane» exige que el sistema haya reconocido un plano (tarda y falla en superficies lisas);
+          // «point» acepta también puntos de característica sueltos: el anillo sale casi de inmediato.
+          fuente = (await sesion.requestHitTestSource?.({ space: espacioViewer, entityTypes: ["plane", "point"] })) ?? null;
+        } catch {
+          fuente = (await sesion.requestHitTestSource?.({ space: espacioViewer })) ?? null; // el navegador no admite «point»
+        }
       } catch {
         fuente = null;
       }
@@ -206,12 +221,13 @@ export function crearVisor(contenedor: HTMLElement): Visor {
       if (!referencia) return;
       const mio = ++turno;
       let impacto: XRRigidTransform | null = null;
-      if (fuente) {
-        if (!reticula.visible || !ultimoImpacto) return; // no hay superficie: no se coloca en el aire
+      const hayImpacto = fuente !== null && reticula.visible && ultimoImpacto !== null;
+      if (fuente && !hayImpacto && !sinSuperficie) return; // no hay superficie: no se coloca en el aire (todavía)
+      if (hayImpacto) {
         impacto = ultimoImpacto;
         raiz.matrix.copy(reticula.matrix); // el cubo aparece donde está la retícula
       } else {
-        // Plan B sin hit-test: se trae el cubo delante de la mirada actual, a 1,5 m.
+        // Plan B (sin hit-test, o sin superficie tras varios segundos): delante de la mirada actual, a 1,5 m.
         const posicion = new THREE.Vector3().setFromMatrixPosition(camara.matrixWorld);
         const delante = camara.getWorldDirection(new THREE.Vector3()).setY(0).normalize();
         posicion.addScaledVector(delante, 1.5);
@@ -289,10 +305,13 @@ export function crearVisor(contenedor: HTMLElement): Visor {
           const impactos = frame.getHitTestResults(fuente);
           const pose = impactos.length ? impactos[0].getPose(referencia) : null;
           consultas++;
+          if (impactos.length) resultados++;
           if (pose) impactosVistos++;
           if (consultas % 30 === 0) avisar(); // refresca el diagnóstico (el overlay lo limita a 5 veces por segundo)
           if (pose) {
             sinImpacto = 0;
+            sinSuperficie = false;
+            ultimaPose = performance.now();
             reticula.visible = true;
             reticula.matrix.fromArray(pose.transform.matrix);
             ultimoImpacto = pose.transform;
@@ -308,6 +327,10 @@ export function crearVisor(contenedor: HTMLElement): Visor {
               fase = "buscando";
               avisar();
             }
+          }
+          if (!pose && fase === "buscando" && !sinSuperficie && performance.now() - ultimaPose > MS_HASTA_PLAN_B) {
+            sinSuperficie = true; // el texto de ayuda cambia y el toque ya coloca
+            avisar();
           }
         }
         // Con ancla, la posición de `raiz` la corrige el sistema fotograma a fotograma.

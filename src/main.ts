@@ -368,7 +368,9 @@ function ayudaAR(e: EstadoAR): string {
   if (!e.hitTest) return "Este dispositivo no ofrece hit-test: el cubo está a 1,5 m delante. Toca para traerlo delante de ti.";
   switch (e.fase) {
     case "buscando":
-      return "Mueve el teléfono despacio hasta ver el anillo verde sobre una superficie.";
+      return e.sinSuperficie
+        ? "No encuentro superficies. Prueba con una zona con textura y buena luz, o toca la pantalla para colocar el cubo delante de ti."
+        : "Mueve el teléfono despacio hasta ver el anillo verde sobre una superficie.";
     case "listo":
       return "Toca la pantalla para colocar el cubo.";
     case "colocado":
@@ -394,7 +396,7 @@ function pintarEstadoAR(e: EstadoAR): void {
   const datos =
     `hit-test: ${si(e.hitTest)} · anclas: ${si(e.anclas)} · anclado: ${si(e.anclado)} · ` +
     `fase: ${e.fase} · escala: ${e.escala.toFixed(2)} · giro: ${e.giroGrados}° · pos: ${pos} · ` +
-    `consultas: ${e.consultas} · impactos: ${e.impactos}`;
+    `consultas: ${e.consultas} · resultados: ${e.resultados} · poses: ${e.impactos}`;
   if (xrEstado.textContent !== ayuda) xrEstado.textContent = ayuda;
   if (xrDatos.textContent !== datos) xrDatos.textContent = datos;
 }
