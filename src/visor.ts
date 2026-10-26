@@ -4,7 +4,7 @@
 // sin inventar archivos .glb que no están en el proyecto.
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { capacidadesDe, laboratorioAR, type CapacidadesAR } from "./xr";
+import { capacidadesDe, type CapacidadesAR } from "./xr";
 import { crearGestos } from "./gestos";
 
 export interface Visor {
@@ -45,8 +45,6 @@ export interface EstadoAR extends CapacidadesAR {
   impactos: number; // consultas con una pose utilizable
   /** true si pasaron varios segundos sin superficie: el toque ya coloca delante de la mirada. */
   sinSuperficie: boolean;
-  /** Funciones que el navegador activó de verdad (solo se muestra en modo laboratorio). */
-  funciones: string;
 }
 
 export interface OpcionesAR {
@@ -133,8 +131,7 @@ export function crearVisor(contenedor: HTMLElement): Visor {
   async function entrarEnAR(sesion: XRSession, opciones: OpcionesAR): Promise<EstadoAR> {
     cancelAnimationFrame(animacion); // en AR NO manda requestAnimationFrame: manda el reloj del visor XR
     renderer.xr.enabled = true;
-    const lab = laboratorioAR();
-    renderer.xr.setReferenceSpaceType(lab.floor ? "local-floor" : "local");
+    renderer.xr.setReferenceSpaceType("local");
     await renderer.xr.setSession(sesion);
     sesionAR = sesion;
 
@@ -168,7 +165,6 @@ export function crearVisor(contenedor: HTMLElement): Visor {
         resultados,
         impactos: impactosVistos,
         sinSuperficie,
-        funciones: ((sesion as { enabledFeatures?: string[] }).enabledFeatures ?? []).join(","),
       };
     };
     const avisar = () => opciones.alCambiar(estado());
@@ -305,7 +301,7 @@ export function crearVisor(contenedor: HTMLElement): Visor {
     renderer.setAnimationLoop((_t, frame) => {
       const referencia = renderer.xr.getReferenceSpace();
       if (frame && referencia) {
-        if (fuente && cuadro++ % (lab.cada1 ? 1 : CADA_CUANTOS_FOTOGRAMAS) === 0) {
+        if (fuente && cuadro++ % CADA_CUANTOS_FOTOGRAMAS === 0) {
           const impactos = frame.getHitTestResults(fuente);
           const pose = impactos.length ? impactos[0].getPose(referencia) : null;
           consultas++;

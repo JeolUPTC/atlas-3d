@@ -16,7 +16,7 @@ import { pedirPermisoOrientacion, hayOrientacionReal, iniciarControlOrientacion 
 import type { ControlOrientacion } from "./sensores";
 import { estadoAvisos, pedirPermisoAvisos, mostrarAviso } from "./avisos";
 import { ETIQUETA_SYNC, descargarPendientes } from "./descargas";
-import { laboratorioAR, diagnosticarAR, mensajeSoporteAR, pedirSesionAR, describirErrorAR } from "./xr";
+import { diagnosticarAR, mensajeSoporteAR, pedirSesionAR, describirErrorAR } from "./xr";
 import { iniciarCamaraDeFondo, detenerCamaraDeFondo, describirErrorCamara } from "./camara";
 
 // Punto de entrada del proyecto. El andamiaje de Vite + TypeScript + Three.js
@@ -396,8 +396,7 @@ function pintarEstadoAR(e: EstadoAR): void {
   const datos =
     `hit-test: ${si(e.hitTest)} · anclas: ${si(e.anclas)} · anclado: ${si(e.anclado)} · ` +
     `fase: ${e.fase} · escala: ${e.escala.toFixed(2)} · giro: ${e.giroGrados}° · pos: ${pos} · ` +
-    `consultas: ${e.consultas} · resultados: ${e.resultados} · poses: ${e.impactos}` +
-    (laboratorioAR().nombre ? ` · lab: ${laboratorioAR().nombre} · funciones: ${e.funciones}` : "");
+    `consultas: ${e.consultas} · resultados: ${e.resultados} · poses: ${e.impactos}`;
   if (xrEstado.textContent !== ayuda) xrEstado.textContent = ayuda;
   if (xrDatos.textContent !== datos) xrDatos.textContent = datos;
 }
@@ -438,7 +437,7 @@ btnAR.addEventListener("click", async () => {
         estadoAR.textContent = "La sesión de realidad aumentada terminó.";
       },
     });
-    // Las funciones se PIDEN como opcionales; aquí se ve cuáles se concedieron de verdad.
+    // Alguna función puede haberse pedido como opcional; aquí se ve cuáles se concedieron de verdad.
     const faltan = [!estado.overlay && "dom-overlay", !estado.hitTest && "hit-test", !estado.anclas && "anchors"].filter(Boolean);
     estadoAR.textContent = faltan.length
       ? `Sesión de realidad aumentada activa. El navegador no concedió: ${faltan.join(", ")}.`

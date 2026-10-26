@@ -1,8 +1,9 @@
 // xr.ts — realidad aumentada con WebXR (Sesiones 38 y 39).
 // Sesión 38: detectar si se puede, pedir la sesión dentro de un clic y cerrarla bien.
-// Sesión 39: además se piden las funciones OPCIONALES «hit-test» (encontrar una
-// superficie real) y «anchors» (anclar el objeto a ella), y se averigua cuáles
-// concedió realmente el navegador para tener un plan B en cada caso.
+// Sesión 39: además se piden «hit-test» (encontrar una superficie real; primero como
+// función requerida y, si el dispositivo no la ofrece, como opcional) y «anchors»
+// (anclar el objeto a ella), y se averigua cuáles concedió realmente el navegador
+// para tener un plan B en cada caso.
 
 /** Resultado de preguntar «¿puedo usar AR aquí?». */
 export type SoporteAR = "disponible" | "contexto-inseguro" | "sin-webxr" | "sin-ar";
@@ -45,46 +46,30 @@ export function mensajeSoporteAR(estado: SoporteAR): string {
   }
 }
 
-export interface LaboratorioAR {
-  nombre: string;
-  req: boolean; // hit-test como función requerida, no opcional
-  floor: boolean; // espacio de referencia «local-floor» en vez de «local»
-  cada1: boolean; // consultar el hit-test en todos los fotogramas
-  noanc: boolean; // no pedir «anchors»
-}
-
-/** Lee ?lab=req|floor|cada1|noanc|todo. Sin parámetro, todo apagado: la app se comporta normal. */
-export function laboratorioAR(): LaboratorioAR {
-  let nombre = "";
-  try {
-    nombre = new URLSearchParams(location.search).get("lab") ?? "";
-  } catch {
-    nombre = "";
-  }
-  const todo = nombre === "todo";
-  return { nombre, req: todo || nombre === "req", floor: todo || nombre === "floor", cada1: todo || nombre === "cada1", noanc: todo || nombre === "noanc" };
-}
-
 /**
  * Pide la sesión AR. DEBE llamarse desde el manejador de un clic: sin gesto del
  * usuario, el navegador la rechaza con SecurityError.
+ *
+ * Primer intento: `hit-test` como función REQUERIDA. Con ella opcional, Chrome en Android
+ * concedía la función y creaba la fuente, pero nunca entregaba una superficie; como requerida,
+ * el anillo sale. Si el dispositivo no la ofrece (NotSupportedError), se reintenta con todo
+ * opcional: la sesión se abre igual y la app usa su plan B.
  */
-export function pedirSesionAR(overlay: HTMLElement | null): Promise<XRSession> {
-  const lab = laboratorioAR();
-  const opciones: XRSessionInit & { domOverlay?: { root: Element } } = {
-    requiredFeatures: ["local"], // el origen (0,0,0) es donde está el usuario al empezar
-    // Todas OPCIONALES: si el dispositivo no las tiene, la sesión se abre igual y la app usa su plan B.
-    optionalFeatures: ["dom-overlay", "hit-test", "anchors"],
+export async function pedirSesionAR(overlay: HTMLElement | null): Promise<XRSession> {
+  const abrir = (requeridas: string[], opcionales: string[]) => {
+    const opciones: XRSessionInit & { domOverlay?: { root: Element } } = {
+      requiredFeatures: requeridas, // «local»: el origen (0,0,0) es donde está el usuario al empezar
+      optionalFeatures: opcionales,
+    };
+    if (overlay) opciones.domOverlay = { root: overlay };
+    return navigator.xr!.requestSession("immersive-ar", opciones);
   };
-  // Laboratorio (solo con ?lab=…): variantes para descubrir por qué un dispositivo no da hit-test.
-  if (lab.req) {
-    opciones.requiredFeatures!.push("hit-test");
-    opciones.optionalFeatures = opciones.optionalFeatures!.filter((f) => f !== "hit-test");
+  try {
+    return await abrir(["local", "hit-test"], ["dom-overlay", "anchors"]);
+  } catch (error) {
+    if ((error as DOMException).name !== "NotSupportedError") throw error;
+    return abrir(["local"], ["dom-overlay", "hit-test", "anchors"]);
   }
-  if (lab.floor) opciones.optionalFeatures!.push("local-floor");
-  if (lab.noanc) opciones.optionalFeatures = opciones.optionalFeatures!.filter((f) => f !== "anchors");
-  if (overlay) opciones.domOverlay = { root: overlay };
-  return navigator.xr!.requestSession("immersive-ar", opciones);
 }
 
 /** Qué funciones opcionales concedió de verdad el navegador en esta sesión. */
