@@ -4,6 +4,6 @@
     "lib": ["ES2020", "WebWorker"],
     "types": []
   },
-  "include": ["src/sw.ts", "src/db.ts", "src/descargas.ts"],
+  "include": ["sw-env.d.ts", "src/sw.ts", "src/db.ts", "src/descargas.ts"],
   "exclude": []
 }

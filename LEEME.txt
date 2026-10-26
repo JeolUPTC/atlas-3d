@@ -1,21 +1,24 @@
-Atlas 3D de Arquitectura de Software — checkpoint al cierre de la Sesión 38
+Atlas 3D de Arquitectura de Software — checkpoint al cierre de la Sesión 39
 Electiva - PWA · UPTC (Sub-bloque B)
 
 Qué es esto
 -----------
-El Atlas 3D con una primera SESIÓN DE REALIDAD AUMENTADA (WebXR immersive-ar).
-Es el PUNTO DE PARTIDA de la Sesión 39 (hit-test: apoyar el objeto en una
-superficie real y anclarlo).
+El Atlas 3D con REALIDAD AUMENTADA COMPLETA: el anillo verde (retícula) busca una
+superficie con hit-test, tocas para apoyar el cubo, el objeto queda anclado y lo
+mueves, giras y escalas con los dedos. Si el dispositivo no ofrece hit-test o
+anclas, la app usa un plan B en vez de fallar.
+Es el cierre del bloque de WebXR (Sesión 39).
 
-Novedades de la Sesión 38
+Novedades de la Sesión 39
 --------------------------
-  src/xr.ts        diagnosticarAR()/detectarSoporteAR(), pedirSesionAR(), mensajes de error
-  src/visor.ts     entrarEnAR(): render con setAnimationLoop, espacio "local",
-                   fondo transparente, cubo a ~40 cm y 1,5 m delante
-  src/main.ts      botón «Ver en AR»: apaga cámara y sensores, pide la sesión
-                   dentro del clic, y restaura el visor al terminar
-  index.html       botón, línea de estado, diagnóstico («Comprobar de nuevo») y overlay DOM con «Salir de AR»
-  src/style.css    reglas del overlay (.xr-overlay, :xr-overlay)
+  src/xr.ts        pide «hit-test» y «anchors» como funciones OPCIONALES;
+                   capacidadesDe(sesion) dice cuáles concedió el navegador
+  src/visor.ts     retícula, XRHitTestSource con el espacio «viewer», colocar en
+                   «select», XRAnchor (y plan B), mover con rayo + plano
+  src/gestos.ts    Pointer Events: un dedo mueve, dos dedos giran y escalan
+  src/main.ts      texto de ayuda por fase, línea de datos, beforexrselect
+  index.html       línea #xr-datos en el overlay
+  src/style.css    touch-action: none en el overlay
 
 Cómo probarlo
 --------------
@@ -23,18 +26,26 @@ Cómo probarlo
   npm run build        (compila src/sw.ts y la app)
   npm run preview      → http://localhost:4173
 
-  En un escritorio el botón queda deshabilitado con el motivo (es lo correcto).
-  Abre «Diagnóstico de realidad aumentada» bajo el visor para ver qué comprobación
-  falló. Con el emulador (extensión Immersive Web Emulator): actívalo con su icono
-  en esta pestaña, elige Meta Quest 3 en DevTools → WebXR y pulsa «Comprobar de nuevo».
-  Para ver AR de verdad hace falta un teléfono Android con ARCore y Chrome,
-  sirviendo la app por HTTPS (la guía explica cómo) o con depuración USB.
+  Hit-test y anclas necesitan un dispositivo AR. En el escritorio, el emulador
+  (Immersive Web Emulator) los ofrece pero DOM overlay no: sin overlay no llegan
+  los gestos con los dedos. Para verlo completo, usa un teléfono Android con
+  ARCore y Chrome, sirviendo la app por HTTPS (GitHub Pages: ver abajo).
+
+Verlo en un teléfono (GitHub Pages)
+------------------------------------
+  El proyecto ya es compatible con subrutas (usuario.github.io/nombre-repo/):
+  nada usa rutas absolutas; todo cuelga de import.meta.env.BASE_URL.
+  1. Crea un repositorio público y sube el proyecto (con .github/workflows).
+  2. Settings → Pages → Source: GitHub Actions.
+  3. Haz push a main: el flujo .github/workflows/pages.yml compila con
+     `npm run build -- --base=/nombre-del-repo/` y publica dist.
+  4. Abre https://usuario.github.io/nombre-del-repo/ en Chrome del teléfono.
 
 Limitaciones
 ------------
-  - El cubo se coloca en una posición FIJA respecto a donde empezó la sesión;
-    NO se apoya en el piso ni en una mesa (eso es la Sesión 39).
   - No funciona en iPhone: Safari no ofrece WebXR immersive-ar.
+  - Los gestos usan el overlay DOM: sin esa función solo queda «tocar para colocar».
   - Un emulador comprueba el código, no sustituye a un teléfono con ARCore.
+  - El cubo es de prueba; el catálogo real de modelos 3D llega más adelante.
 
 UPTC · Facultad de Ingeniería · Electiva - PWA

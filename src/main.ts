@@ -11,7 +11,7 @@ import {
 } from "./db";
 import { derivarClaveDesdeContrasena, cifrarTexto, descifrarTexto, obtenerOCrearSal } from "./crypto";
 import type { ProgresoModelo } from "./db";
-import { crearVisor } from "./visor";
+import { crearVisor, type EstadoAR } from "./visor";
 import { pedirPermisoOrientacion, hayOrientacionReal, iniciarControlOrientacion } from "./sensores";
 import type { ControlOrientacion } from "./sensores";
 import { estadoAvisos, pedirPermisoAvisos, mostrarAviso } from "./avisos";
@@ -332,14 +332,16 @@ btnDescargar.addEventListener("click", async () => {
 
 // Instalación: appinstalled se dispara cuando el usuario instala la PWA.
 window.addEventListener("appinstalled", () => {
-  void mostrarAviso("Atlas 3D instalado", "Ya puedes abrirlo desde tu pantalla de inicio.", "/", "atlas-instalado");
+  void mostrarAviso("Atlas 3D instalado", "Ya puedes abrirlo desde tu pantalla de inicio.", import.meta.env.BASE_URL, "atlas-instalado");
 });
 
-// ── Sesión 38: realidad aumentada con WebXR ────────────────────────────────
+// ── Sesiones 38-39: realidad aumentada con WebXR ────────────────────────────────
 const btnAR = document.querySelector<HTMLButtonElement>("#btn-ar")!;
 const estadoAR = document.querySelector<HTMLElement>("#estado-ar")!;
 const overlayAR = document.querySelector<HTMLElement>("#xr-overlay")!;
 const btnSalirAR = document.querySelector<HTMLButtonElement>("#btn-salir-ar")!;
+const xrEstado = document.querySelector<HTMLElement>("#xr-estado")!;
+const xrDatos = document.querySelector<HTMLElement>("#xr-datos")!;
 let sesionAR: XRSession | null = null;
 
 const diagAR = document.querySelector<HTMLElement>("#diag-ar")!;
@@ -361,6 +363,31 @@ void comprobarAR();
 btnRecomprobar.addEventListener("click", () => void comprobarAR());
 navigator.xr?.addEventListener("devicechange", () => void comprobarAR());
 
+// Texto de ayuda sobre la cámara según en qué punto va la colocación.
+function ayudaAR(e: EstadoAR): string {
+  if (!e.hitTest) return "Este dispositivo no ofrece hit-test: el cubo está a 1,5 m delante. Toca para traerlo delante de ti.";
+  switch (e.fase) {
+    case "buscando":
+      return "Mueve el teléfono despacio hasta ver el anillo verde sobre una superficie.";
+    case "listo":
+      return "Toca la pantalla para colocar el cubo.";
+    case "colocado":
+      return e.overlay
+        ? "Arrastra para moverlo, gira con dos dedos, pellizca para el tamaño. Toca otro punto para recolocarlo."
+        : "Cubo colocado. Toca otro punto para recolocarlo.";
+  }
+}
+
+function mostrarEstadoAR(e: EstadoAR): void {
+  xrEstado.textContent = ayudaAR(e);
+  const si = (v: boolean) => (v ? "sí" : "no");
+  const { x, y, z } = e.posicion;
+  const pos = e.fase === "colocado" ? `(${x.toFixed(2)}, ${y.toFixed(2)}, ${z.toFixed(2)}) m` : "—";
+  xrDatos.textContent =
+    `hit-test: ${si(e.hitTest)} · anclas: ${si(e.anclas)} · anclado: ${si(e.anclado)} · ` +
+    `fase: ${e.fase} · escala: ${e.escala.toFixed(2)} · giro: ${e.giroGrados}° · pos: ${pos}`;
+}
+
 btnAR.addEventListener("click", async () => {
   avisarVisor("");
   // La cámara del navegador y la sesión AR no pueden usarse a la vez: la AR
@@ -372,15 +399,20 @@ btnAR.addEventListener("click", async () => {
     const sesion = await pedirSesionAR(overlayAR);
     sesionAR = sesion;
     btnAR.disabled = true;
-    await visor.entrarEnAR(sesion, () => {
-      sesionAR = null;
-      btnAR.disabled = false;
-      estadoAR.textContent = "La sesión de realidad aumentada terminó.";
+    const estado = await visor.entrarEnAR(sesion, {
+      overlay: overlayAR,
+      alCambiar: mostrarEstadoAR,
+      alTerminar: () => {
+        sesionAR = null;
+        btnAR.disabled = false;
+        estadoAR.textContent = "La sesión de realidad aumentada terminó.";
+      },
     });
-    // domOverlayState existe solo si el navegador concedió la función «dom-overlay».
-    estadoAR.textContent = sesion.domOverlayState
-      ? "Sesión de realidad aumentada activa. Usa «Salir de AR» sobre la cámara."
-      : "Sesión de realidad aumentada activa. Este navegador no mostró el botón sobre la cámara: sal con el gesto de salida del sistema.";
+    // Las funciones se PIDEN como opcionales; aquí se ve cuáles se concedieron de verdad.
+    const faltan = [!estado.overlay && "dom-overlay", !estado.hitTest && "hit-test", !estado.anclas && "anchors"].filter(Boolean);
+    estadoAR.textContent = faltan.length
+      ? `Sesión de realidad aumentada activa. El navegador no concedió: ${faltan.join(", ")}.`
+      : "Sesión de realidad aumentada activa con hit-test, anclas y botones sobre la cámara.";
   } catch (err) {
     sesionAR?.end().catch(() => {});
     sesionAR = null;
@@ -388,6 +420,10 @@ btnAR.addEventListener("click", async () => {
     avisarVisor(describirErrorAR(err));
   }
 });
+
+// Un toque sobre un botón del overlay NO debe contar como «tocar para colocar»:
+// el navegador avisa con `beforexrselect` y basta cancelarlo.
+btnSalirAR.addEventListener("beforexrselect", (e) => e.preventDefault());
 
 btnSalirAR.addEventListener("click", () => {
   void sesionAR?.end();
@@ -402,7 +438,7 @@ registerSW({
     estadoDescargaEl.textContent = "✓ La app ya funciona sin conexión.";
     // El usuario está mirando la pantalla: la notificación solo si NO la está mirando.
     if (document.visibilityState !== "visible") {
-      void mostrarAviso("Atlas 3D listo", "Ya funciona sin conexión.", "/", "atlas-offline");
+      void mostrarAviso("Atlas 3D listo", "Ya funciona sin conexión.", import.meta.env.BASE_URL, "atlas-offline");
     }
   },
   onRegisteredSW(swUrl, registration) {

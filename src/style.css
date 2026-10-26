@@ -160,11 +160,12 @@ body {
 .diag-ar { font-size: .8em; color: #9fb0d0; margin: .2em 0 .6em; }
 .diag-ar summary { cursor: pointer; }
 .diag-ar-texto { margin: .5em 0; padding: .6em .8em; background: #0d1424; border-radius: 6px; white-space: pre-wrap; font-size: 1em; }
-.xr-overlay { display: none; }
+.xr-overlay { display: none; touch-action: none; /* los gestos son nuestros: que el navegador no haga scroll ni zoom */ }
 /* Mientras dura la sesión, el navegador estira este elemento sobre toda la pantalla
    (fondo transparente). Solo hay que decir cómo acomodar lo de adentro. */
 .xr-overlay:xr-overlay { display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: .6em; padding-bottom: 1.2em; box-sizing: border-box; }
 .xr-overlay p { margin: 0; background: rgba(11, 18, 32, .75); color: #e8e2cf; padding: .4em .8em; border-radius: 8px; font-size: .9em; }
+.xr-overlay .xr-datos { font: .72em ui-monospace, monospace; }
 .xr-overlay button { background: #ffcc29; color: #0b1220; border: 0; border-radius: 8px; padding: .7em 1.2em; font-weight: 700; cursor: pointer; }
 
 /* Una sola columna centrada: visor, avisos/descargas y lista de modelos con el mismo ancho */

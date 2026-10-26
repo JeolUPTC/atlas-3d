@@ -1,7 +1,8 @@
-// xr.ts — realidad aumentada con WebXR (Sesión 38).
-// Esta sesión solo ARRANCA la sesión AR: detecta si se puede, la pide dentro
-// de un clic y la cierra bien. Colocar el objeto sobre una superficie real
-// (hit-test) y anclarlo es el tema de la Sesión 39.
+// xr.ts — realidad aumentada con WebXR (Sesiones 38 y 39).
+// Sesión 38: detectar si se puede, pedir la sesión dentro de un clic y cerrarla bien.
+// Sesión 39: además se piden las funciones OPCIONALES «hit-test» (encontrar una
+// superficie real) y «anchors» (anclar el objeto a ella), y se averigua cuáles
+// concedió realmente el navegador para tener un plan B en cada caso.
 
 /** Resultado de preguntar «¿puedo usar AR aquí?». */
 export type SoporteAR = "disponible" | "contexto-inseguro" | "sin-webxr" | "sin-ar";
@@ -51,10 +52,32 @@ export function mensajeSoporteAR(estado: SoporteAR): string {
 export function pedirSesionAR(overlay: HTMLElement | null): Promise<XRSession> {
   const opciones: XRSessionInit & { domOverlay?: { root: Element } } = {
     requiredFeatures: ["local"], // el origen (0,0,0) es donde está el usuario al empezar
-    optionalFeatures: ["dom-overlay"], // si existe, el botón «Salir» se dibuja sobre la cámara
+    // Todas OPCIONALES: si el dispositivo no las tiene, la sesión se abre igual y la app usa su plan B.
+    optionalFeatures: ["dom-overlay", "hit-test", "anchors"],
   };
   if (overlay) opciones.domOverlay = { root: overlay };
   return navigator.xr!.requestSession("immersive-ar", opciones);
+}
+
+/** Qué funciones opcionales concedió de verdad el navegador en esta sesión. */
+export interface CapacidadesAR {
+  overlay: boolean; // dom-overlay: botones HTML y gestos de dedos sobre la cámara
+  hitTest: boolean; // hit-test: preguntar «¿dónde está la superficie en esta dirección?»
+  anclas: boolean; // anchors: fijar un punto del mundo real y que el sistema lo siga corrigiendo
+}
+
+/**
+ * Pedir una función no garantiza recibirla. `enabledFeatures` lista las concedidas;
+ * si el navegador aún no la ofrece, se mira si existen las funciones de la API.
+ */
+export function capacidadesDe(sesion: XRSession): CapacidadesAR {
+  const concedidas = (sesion as XRSession & { enabledFeatures?: string[] }).enabledFeatures;
+  const tiene = (nombre: string, respaldo: boolean) => (Array.isArray(concedidas) ? concedidas.includes(nombre) : respaldo);
+  return {
+    overlay: Boolean(sesion.domOverlayState),
+    hitTest: tiene("hit-test", typeof sesion.requestHitTestSource === "function"),
+    anclas: tiene("anchors", typeof XRFrame !== "undefined" && "createAnchor" in XRFrame.prototype),
+  };
 }
 
 export function describirErrorAR(err: unknown): string {
