@@ -39,6 +39,9 @@ export interface EstadoAR extends CapacidadesAR {
   giroGrados: number;
   /** Centro del objeto en el espacio «local» (metros): x derecha, y arriba, -z adelante. */
   posicion: { x: number; y: number; z: number };
+  /** Diagnóstico: cuántas veces se preguntó al hit-test y cuántas respondió con una superficie. */
+  consultas: number;
+  impactos: number;
 }
 
 export interface OpcionesAR {
@@ -137,6 +140,8 @@ export function crearVisor(contenedor: HTMLElement): Visor {
     let fase: FaseAR = caps.hitTest ? "buscando" : "colocado";
     let ancla: XRAnchor | null = null;
     let escala = ESCALA_INICIAL;
+    let consultas = 0;
+    let impactosVistos = 0;
     let ultimoImpacto: XRRigidTransform | null = null; // pose de la superficie bajo el centro de la pantalla
 
     const estado = (): EstadoAR => {
@@ -149,6 +154,8 @@ export function crearVisor(contenedor: HTMLElement): Visor {
         escala,
         giroGrados: ((aGrados(grupo.rotation.y) % 360) + 360) % 360,
         posicion: { x: p.x, y: p.y, z: p.z },
+        consultas,
+        impactos: impactosVistos,
       };
     };
     const avisar = () => opciones.alCambiar(estado());
@@ -281,6 +288,9 @@ export function crearVisor(contenedor: HTMLElement): Visor {
         if (fuente && cuadro++ % CADA_CUANTOS_FOTOGRAMAS === 0) {
           const impactos = frame.getHitTestResults(fuente);
           const pose = impactos.length ? impactos[0].getPose(referencia) : null;
+          consultas++;
+          if (pose) impactosVistos++;
+          if (consultas % 30 === 0) avisar(); // refresca el diagnóstico (el overlay lo limita a 5 veces por segundo)
           if (pose) {
             sinImpacto = 0;
             reticula.visible = true;

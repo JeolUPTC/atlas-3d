@@ -393,7 +393,8 @@ function pintarEstadoAR(e: EstadoAR): void {
   const ayuda = ayudaAR(e);
   const datos =
     `hit-test: ${si(e.hitTest)} · anclas: ${si(e.anclas)} · anclado: ${si(e.anclado)} · ` +
-    `fase: ${e.fase} · escala: ${e.escala.toFixed(2)} · giro: ${e.giroGrados}° · pos: ${pos}`;
+    `fase: ${e.fase} · escala: ${e.escala.toFixed(2)} · giro: ${e.giroGrados}° · pos: ${pos} · ` +
+    `consultas: ${e.consultas} · impactos: ${e.impactos}`;
   if (xrEstado.textContent !== ayuda) xrEstado.textContent = ayuda;
   if (xrDatos.textContent !== datos) xrDatos.textContent = datos;
 }
