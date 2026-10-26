@@ -45,16 +45,44 @@ export function mensajeSoporteAR(estado: SoporteAR): string {
   }
 }
 
+export interface LaboratorioAR {
+  nombre: string;
+  req: boolean; // hit-test como función requerida, no opcional
+  floor: boolean; // espacio de referencia «local-floor» en vez de «local»
+  cada1: boolean; // consultar el hit-test en todos los fotogramas
+  noanc: boolean; // no pedir «anchors»
+}
+
+/** Lee ?lab=req|floor|cada1|noanc|todo. Sin parámetro, todo apagado: la app se comporta normal. */
+export function laboratorioAR(): LaboratorioAR {
+  let nombre = "";
+  try {
+    nombre = new URLSearchParams(location.search).get("lab") ?? "";
+  } catch {
+    nombre = "";
+  }
+  const todo = nombre === "todo";
+  return { nombre, req: todo || nombre === "req", floor: todo || nombre === "floor", cada1: todo || nombre === "cada1", noanc: todo || nombre === "noanc" };
+}
+
 /**
  * Pide la sesión AR. DEBE llamarse desde el manejador de un clic: sin gesto del
  * usuario, el navegador la rechaza con SecurityError.
  */
 export function pedirSesionAR(overlay: HTMLElement | null): Promise<XRSession> {
+  const lab = laboratorioAR();
   const opciones: XRSessionInit & { domOverlay?: { root: Element } } = {
     requiredFeatures: ["local"], // el origen (0,0,0) es donde está el usuario al empezar
     // Todas OPCIONALES: si el dispositivo no las tiene, la sesión se abre igual y la app usa su plan B.
     optionalFeatures: ["dom-overlay", "hit-test", "anchors"],
   };
+  // Laboratorio (solo con ?lab=…): variantes para descubrir por qué un dispositivo no da hit-test.
+  if (lab.req) {
+    opciones.requiredFeatures!.push("hit-test");
+    opciones.optionalFeatures = opciones.optionalFeatures!.filter((f) => f !== "hit-test");
+  }
+  if (lab.floor) opciones.optionalFeatures!.push("local-floor");
+  if (lab.noanc) opciones.optionalFeatures = opciones.optionalFeatures!.filter((f) => f !== "anchors");
   if (overlay) opciones.domOverlay = { root: overlay };
   return navigator.xr!.requestSession("immersive-ar", opciones);
 }

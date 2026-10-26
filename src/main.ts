@@ -16,7 +16,7 @@ import { pedirPermisoOrientacion, hayOrientacionReal, iniciarControlOrientacion 
 import type { ControlOrientacion } from "./sensores";
 import { estadoAvisos, pedirPermisoAvisos, mostrarAviso } from "./avisos";
 import { ETIQUETA_SYNC, descargarPendientes } from "./descargas";
-import { diagnosticarAR, mensajeSoporteAR, pedirSesionAR, describirErrorAR } from "./xr";
+import { laboratorioAR, diagnosticarAR, mensajeSoporteAR, pedirSesionAR, describirErrorAR } from "./xr";
 import { iniciarCamaraDeFondo, detenerCamaraDeFondo, describirErrorCamara } from "./camara";
 
 // Punto de entrada del proyecto. El andamiaje de Vite + TypeScript + Three.js
@@ -396,7 +396,8 @@ function pintarEstadoAR(e: EstadoAR): void {
   const datos =
     `hit-test: ${si(e.hitTest)} · anclas: ${si(e.anclas)} · anclado: ${si(e.anclado)} · ` +
     `fase: ${e.fase} · escala: ${e.escala.toFixed(2)} · giro: ${e.giroGrados}° · pos: ${pos} · ` +
-    `consultas: ${e.consultas} · resultados: ${e.resultados} · poses: ${e.impactos}`;
+    `consultas: ${e.consultas} · resultados: ${e.resultados} · poses: ${e.impactos}` +
+    (laboratorioAR().nombre ? ` · lab: ${laboratorioAR().nombre} · funciones: ${e.funciones}` : "");
   if (xrEstado.textContent !== ayuda) xrEstado.textContent = ayuda;
   if (xrDatos.textContent !== datos) xrDatos.textContent = datos;
 }
