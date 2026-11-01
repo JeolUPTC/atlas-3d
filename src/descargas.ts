@@ -4,6 +4,7 @@
 // Sync). Como el Atlas pasa por Vite, el código se escribe UNA vez — a
 // diferencia del Gestor (Sesión 26), cuyo SW clásico no podía importar módulos.
 import { obtenerDescargas, marcarDescargaLista } from "./db";
+import type { Ficha } from "./modelos/tipos";
 
 export const ETIQUETA_SYNC = "descargar-modelos";
 export const CACHE_MODELOS = "modelos-3d";
@@ -35,4 +36,26 @@ export async function descargarPendientes(db: IDBDatabase, alProgresar: AlProgre
     await alProgresar(hechos, total);
   }
   return descargadas;
+}
+
+/**
+ * Sesión 40: lee la ficha ampliada de un modelo. Primero mira la caché (sirve sin conexión);
+ * si no está, la pide a la red; si tampoco hay red, devuelve null y la app usa solo lo que
+ * viaja en el código (el resumen de cada pieza).
+ */
+export async function leerFicha(id: string): Promise<Ficha | null> {
+  try {
+    const cache = await caches.open(CACHE_MODELOS);
+    const guardada = await cache.match(urlDeModelo(id));
+    if (guardada) return (await guardada.json()) as Ficha;
+  } catch {
+    /* sin Cache Storage: se intenta la red */
+  }
+  try {
+    const resp = await fetch(urlDeModelo(id));
+    if (resp.ok) return (await resp.json()) as Ficha;
+  } catch {
+    /* sin red */
+  }
+  return null;
 }

@@ -1,24 +1,26 @@
-Atlas 3D de Arquitectura de Software — checkpoint al cierre de la Sesión 39
+Atlas 3D de Arquitectura de Software — checkpoint al cierre de la Sesión 40
 Electiva - PWA · UPTC (Sub-bloque B)
 
 Qué es esto
 -----------
-El Atlas 3D con REALIDAD AUMENTADA COMPLETA: el anillo verde (retícula) busca una
-superficie con hit-test, tocas para apoyar el cubo, el objeto queda anclado y lo
-mueves, giras y escalas con los dedos. Si el dispositivo no ofrece hit-test o
-anclas, la app usa un plan B en vez de fallar.
-Es el cierre del bloque de WebXR (Sesión 39).
+El Atlas 3D con sus TRES MODELOS DE ARQUITECTURA dibujados con Three.js, sin archivos
+.glb: patrón MVC, arquitectura en capas y microservicios. Cada modelo se describe con
+DATOS (piezas y enlaces) y un constructor genérico los convierte en mallas, flechas y
+rótulos. Se ven en 3D en la página, se tocan para leer qué hace cada pieza y se
+apoyan en tu mesa con realidad aumentada (◀ ▶ recorren las piezas dentro de AR).
+Las fichas ampliadas (public/modelos/*.json) se descargan para usarlas sin conexión.
 
-Novedades de la Sesión 39
+Novedades de la Sesión 40
 --------------------------
-  src/xr.ts        pide «hit-test» y «anchors» como funciones OPCIONALES;
-                   capacidadesDe(sesion) dice cuáles concedió el navegador
-  src/visor.ts     retícula, XRHitTestSource con el espacio «viewer», colocar en
-                   «select», XRAnchor (y plan B), mover con rayo + plano
-  src/gestos.ts    Pointer Events: un dedo mueve, dos dedos giran y escalan
-  src/main.ts      texto de ayuda por fase, línea de datos, beforexrselect
-  index.html       línea #xr-datos en el overlay
-  src/style.css    touch-action: none en el overlay
+  src/modelos/tipos.ts          tipos: Pieza, Enlace, DefinicionModelo, Ficha; roles y colores
+  src/modelos/constructor.ts    construirModelo(def): piezas, flechas, rótulos, resaltar()
+  src/modelos/{mvc,capas,microservicios}.ts   los tres modelos, como datos
+  src/modelos/index.ts          CATALOGO y modeloPorId()
+  src/visor.ts                  mostrarModelo(), seleccionar(), toque sobre una pieza (raycaster)
+  src/main.ts                   panel del modelo, lista de piezas, ficha, ◀ ▶ en AR
+  src/db.ts                     IndexedDB v3: los identificadores de la demo pasan a mvc/capas/microservicios
+  src/descargas.ts              leerFicha(): caché → red → nada
+  public/modelos/*.json         fichas ampliadas (responsabilidad y «habla con» de cada pieza)
 
 Cómo probarlo
 --------------
@@ -46,6 +48,6 @@ Limitaciones
   - No funciona en iPhone: Safari no ofrece WebXR immersive-ar.
   - Los gestos usan el overlay DOM: sin esa función solo queda «tocar para colocar».
   - Un emulador comprueba el código, no sustituye a un teléfono con ARCore.
-  - El cubo es de prueba; el catálogo real de modelos 3D llega más adelante.
+  - Los modelos son esquemas didácticos (cajas, cilindros y flechas), no réplicas realistas.
 
 UPTC · Facultad de Ingeniería · Electiva - PWA

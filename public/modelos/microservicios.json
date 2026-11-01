@@ -1,0 +1,72 @@
+{
+  "id": "microservicios",
+  "nombre": "Microservicios",
+  "resumen": "Divide el sistema en servicios pequeños, desplegables por separado, que se comunican por red y cada uno posee sus datos.",
+  "cuando_usarlo": "Equipos grandes que necesitan desplegar partes del sistema de forma independiente.",
+  "riesgo": "Cada llamada es una llamada de red: aparecen fallos parciales, latencia y la complejidad de operar muchos servicios.",
+  "piezas": {
+    "cliente": {
+      "responsabilidad": "Aplicación web o móvil. Solo conoce la dirección del API Gateway.",
+      "habla_con": [
+        "gateway"
+      ]
+    },
+    "gateway": {
+      "responsabilidad": "Punto de entrada único: enruta, autentica y limita el tráfico. Oculta al cliente cuántos servicios hay.",
+      "habla_con": [
+        "cliente",
+        "usuarios",
+        "pedidos",
+        "pagos"
+      ]
+    },
+    "usuarios": {
+      "responsabilidad": "Registro, autenticación y perfil. Dueño exclusivo de su base de datos.",
+      "habla_con": [
+        "gateway",
+        "bd-usuarios"
+      ]
+    },
+    "pedidos": {
+      "responsabilidad": "Ciclo de vida de un pedido. Publica un evento «pedido creado» en el bus en vez de llamar a Pagos.",
+      "habla_con": [
+        "gateway",
+        "bd-pedidos",
+        "broker"
+      ]
+    },
+    "pagos": {
+      "responsabilidad": "Cobros y reembolsos. Escucha los eventos del bus; si Pagos está caído, los eventos esperan.",
+      "habla_con": [
+        "gateway",
+        "bd-pagos",
+        "broker"
+      ]
+    },
+    "bd-usuarios": {
+      "responsabilidad": "Datos de Usuarios. Ningún otro servicio la consulta directamente: pide al servicio.",
+      "habla_con": [
+        "usuarios"
+      ]
+    },
+    "bd-pedidos": {
+      "responsabilidad": "Datos de Pedidos, con su propio esquema.",
+      "habla_con": [
+        "pedidos"
+      ]
+    },
+    "bd-pagos": {
+      "responsabilidad": "Datos de Pagos, con su propio esquema.",
+      "habla_con": [
+        "pagos"
+      ]
+    },
+    "broker": {
+      "responsabilidad": "Cola o bus de eventos (por ejemplo, RabbitMQ o Kafka). Desacopla en el tiempo: quien publica no espera a quien consume.",
+      "habla_con": [
+        "pedidos",
+        "pagos"
+      ]
+    }
+  }
+}

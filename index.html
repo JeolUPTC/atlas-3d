@@ -21,13 +21,20 @@
       <div id="visor" class="visor">
         <video id="fondo-camara" class="fondo-camara" playsinline muted hidden></video>
       </div>
+      <section class="modelo-panel" aria-label="Modelo de arquitectura">
+        <div class="modelo-tabs" id="tabs-modelo" role="group" aria-label="Elegir modelo"></div>
+        <p id="modelo-resumen" class="modelo-resumen"></p>
+        <div id="leyenda" class="leyenda" aria-label="Leyenda de colores"></div>
+        <div id="chips-piezas" class="chips" role="group" aria-label="Piezas del modelo"></div>
+        <div id="pieza-detalle" class="pieza-detalle" aria-live="polite"></div>
+      </section>
       <p id="estado-ar" class="estado-ar" role="status">Comprobando realidad aumentada…</p>
       <details class="diag-ar">
         <summary>Diagnóstico de realidad aumentada</summary>
         <pre id="diag-ar" class="diag-ar-texto"></pre>
         <button type="button" id="btn-recomprobar">Comprobar de nuevo</button>
       </details>
-      <p class="aviso-demo">Visor de prueba: un cubo, no un modelo real. Con la cámara de fondo NO es realidad aumentada: el cubo solo se dibuja encima del video. El botón «Ver en AR» abre una sesión WebXR real: el anillo verde busca una superficie, tocas para apoyar el cubo y lo mueves, giras y escalas con los dedos.</p>
+      <p class="aviso-demo">Toca una pieza para ver qué hace; arrastra para girar la vista. Con la cámara de fondo NO es realidad aumentada: el modelo solo se dibuja encima del video. El botón «Ver en AR» abre una sesión WebXR real: el anillo verde busca una superficie, tocas para apoyar el modelo y lo mueves, giras y escalas con los dedos; con ◀ ▶ recorres sus piezas.</p>
     </section>
     <section class="descargas-zona" aria-labelledby="titulo-descargas">
       <h2 id="titulo-descargas">Uso sin conexión</h2>
@@ -42,6 +49,11 @@
     <div id="xr-overlay" class="xr-overlay">
       <p id="xr-estado">Sesión de realidad aumentada activa</p>
       <p id="xr-datos" class="xr-datos"></p>
+      <div class="xr-piezas">
+        <button type="button" id="btn-pieza-ant" aria-label="Pieza anterior">◀</button>
+        <p id="xr-pieza" class="xr-pieza"></p>
+        <button type="button" id="btn-pieza-sig" aria-label="Pieza siguiente">▶</button>
+      </div>
       <button type="button" id="btn-salir-ar">Salir de AR</button>
     </div>
     <div id="app"></div>

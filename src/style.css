@@ -170,3 +170,24 @@ body {
 
 /* Una sola columna centrada: visor, avisos/descargas y lista de modelos con el mismo ancho */
 .visor-zona, .descargas-zona, .atlas-demo { width: 100%; max-width: 44em; margin-left: auto; margin-right: auto; padding-left: 1em; padding-right: 1em; box-sizing: border-box; }
+
+/* ── Sesión 40: panel del modelo ── */
+.modelo-panel { margin: .8em 0; }
+.modelo-tabs { display: flex; flex-wrap: wrap; gap: .4em; }
+.modelo-tabs .tab { background: #16233a; color: #e8e2cf; border: 1px solid #2a3b5c; border-radius: 999px; padding: .45em .9em; cursor: pointer; font-size: .9em; }
+.modelo-tabs .tab[aria-pressed="true"] { background: #ffcc29; color: #0b1220; border-color: #ffcc29; font-weight: 700; }
+.modelo-resumen { margin: .6em 0 .3em; color: #cfd7e8; font-size: .92em; }
+.leyenda { display: flex; flex-wrap: wrap; gap: .3em .9em; font-size: .78em; color: #9fb0cf; margin-bottom: .5em; }
+.leyenda-item i, .chip i, .pieza-detalle h3 i { display: inline-block; width: .8em; height: .8em; border-radius: 50%; margin-right: .4em; vertical-align: -.05em; }
+.chips { display: flex; flex-wrap: wrap; gap: .35em; }
+.chip { background: #16233a; color: #e8e2cf; border: 1px solid #2a3b5c; border-radius: 8px; padding: .35em .65em; cursor: pointer; font-size: .82em; }
+.chip[aria-pressed="true"] { border-color: #ffcc29; box-shadow: 0 0 0 1px #ffcc29 inset; background: #1f3050; }
+.pieza-detalle { margin-top: .7em; padding: .7em .9em; background: #111b2e; border: 1px solid #22314f; border-radius: 10px; font-size: .9em; line-height: 1.45; min-height: 4.5em; }
+.pieza-detalle h3 { margin: 0 0 .3em; font-size: 1em; }
+.pieza-detalle h3 small { color: #9fb0cf; font-weight: 400; margin-left: .4em; }
+.pieza-detalle p { margin: .3em 0; }
+.nota-ficha { color: #d9a441; font-size: .85em; }
+.resumen-card { margin: .2em 0 .4em; color: #b9c4dc; font-size: .88em; }
+.xr-overlay .xr-piezas { display: flex; align-items: center; gap: .4em; max-width: 94%; }
+.xr-overlay .xr-piezas .xr-pieza { flex: 1; font-size: .82em; max-height: 6.5em; overflow: hidden; }
+.xr-overlay .xr-piezas button { padding: .6em .9em; }

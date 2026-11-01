@@ -5,7 +5,16 @@
 
 const NOMBRE_DB = "atlas3d-progreso-db";
 // Versión 2 (Sesión 37): se agrega el almacén "descargas" (cola de modelos para usar sin conexión).
-const VERSION_DB = 2;
+// Versión 3 (Sesión 40): los modelos de prueba (modelo-demo-1..3) pasan a tener nombre real
+// (mvc, capas, microservicios). La migración RENOMBRA los registros para no perder favoritos ni notas.
+const VERSION_DB = 3;
+
+/** Sesión 40: correspondencia entre los identificadores viejos y los nuevos. */
+export const RENOMBRES_V3: Record<string, string> = {
+  "modelo-demo-1": "mvc",
+  "modelo-demo-2": "capas",
+  "modelo-demo-3": "microservicios",
+};
 
 export interface ProgresoModelo {
   modeloId: string;
@@ -13,6 +22,19 @@ export interface ProgresoModelo {
   ultimaVisita: number | null;
   notaCifrada: ArrayBuffer | null;
   notaIv: Uint8Array | null;
+}
+
+/** Reescribe los registros con identificador viejo. En «descargas» vuelven a «pendiente»: la caché de modelos aún no tiene los archivos nuevos. */
+function migrarIdentificadores(store: IDBObjectStore, reiniciarDescarga: boolean) {
+  for (const [viejo, nuevo] of Object.entries(RENOMBRES_V3)) {
+    const lectura = store.get(viejo);
+    lectura.onsuccess = () => {
+      const registro = lectura.result;
+      if (!registro) return;
+      store.delete(viejo);
+      store.put({ ...registro, modeloId: nuevo, ...(reiniciarDescarga ? { estado: "pendiente" } : {}) });
+    };
+  }
 }
 
 /** Abre (o crea) la base de datos de progreso. */
@@ -31,6 +53,13 @@ export function abrirBaseDeDatos(): Promise<IDBDatabase> {
       }
       if (event.oldVersion < 2) {
         db.createObjectStore("descargas", { keyPath: "modeloId" });
+      }
+      if (event.oldVersion >= 1 && event.oldVersion < 3) {
+        // La clave de un registro no se puede cambiar: se lee cada registro viejo, se escribe
+        // con la clave nueva y se borra el viejo, todo dentro de la transacción de la migración.
+        const tx = (event.target as IDBOpenDBRequest).transaction!;
+        migrarIdentificadores(tx.objectStore("progreso"), false);
+        migrarIdentificadores(tx.objectStore("descargas"), true);
       }
     };
 

@@ -1,0 +1,42 @@
+{
+  "id": "capas",
+  "nombre": "Arquitectura en capas",
+  "resumen": "Organiza el sistema en niveles apilados (presentación, lógica de negocio, datos) donde cada capa solo habla con la inmediatamente inferior.",
+  "cuando_usarlo": "Sistemas empresariales con equipos separados por especialidad.",
+  "riesgo": "Si toda petición atraviesa todas las capas sin aportar nada en las intermedias, se añade latencia y código de paso.",
+  "piezas": {
+    "usuario": {
+      "responsabilidad": "Quien usa la aplicación; solo ve la capa de presentación.",
+      "habla_con": [
+        "presentacion"
+      ]
+    },
+    "presentacion": {
+      "responsabilidad": "Pantallas, formularios y validaciones de forma. Nunca consulta datos por su cuenta: pide a la lógica de negocio.",
+      "habla_con": [
+        "usuario",
+        "negocio"
+      ]
+    },
+    "negocio": {
+      "responsabilidad": "Reglas, cálculos y decisiones. No conoce pantallas ni el tipo de base de datos; así se puede probar sola.",
+      "habla_con": [
+        "presentacion",
+        "acceso"
+      ]
+    },
+    "acceso": {
+      "responsabilidad": "Aísla el almacenamiento: consultas, transacciones y mapeo de registros a objetos. Cambiar de base de datos solo debería tocar esta capa.",
+      "habla_con": [
+        "negocio",
+        "bd"
+      ]
+    },
+    "bd": {
+      "responsabilidad": "Almacenamiento permanente. Solo la capa de acceso a datos le habla.",
+      "habla_con": [
+        "acceso"
+      ]
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "id": "mvc",
+  "nombre": "Patrón MVC",
+  "resumen": "Separa la aplicación en tres responsabilidades: Modelo (datos y reglas), Vista (lo que se ve) y Controlador (recibe la acción del usuario y coordina).",
+  "cuando_usarlo": "Interfaces con varias vistas del mismo dato; facilita probar la lógica sin la pantalla.",
+  "riesgo": "En proyectos pequeños el controlador puede crecer hasta convertirse en un archivo que lo hace todo.",
+  "piezas": {
+    "usuario": {
+      "responsabilidad": "Origina las acciones: un toque, un clic, un formulario enviado.",
+      "habla_con": [
+        "vista"
+      ]
+    },
+    "vista": {
+      "responsabilidad": "Presenta los datos y capta las acciones del usuario. No contiene reglas de negocio: solo las reenvía al controlador.",
+      "habla_con": [
+        "usuario",
+        "controlador",
+        "modelo"
+      ]
+    },
+    "controlador": {
+      "responsabilidad": "Interpreta cada acción y decide qué cambio pedirle al modelo. Es el único que orquesta; si crece demasiado, hay que partirlo.",
+      "habla_con": [
+        "vista",
+        "modelo"
+      ]
+    },
+    "modelo": {
+      "responsabilidad": "Guarda el estado y aplica las reglas. Cuando cambia, avisa a quien esté escuchando (patrón observador) sin saber quién es.",
+      "habla_con": [
+        "controlador",
+        "vista"
+      ]
+    }
+  }
+}
