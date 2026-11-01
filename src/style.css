@@ -191,3 +191,13 @@ body {
 .xr-overlay .xr-piezas { display: flex; align-items: center; gap: .4em; max-width: 94%; }
 .xr-overlay .xr-piezas .xr-pieza { flex: 1; font-size: .82em; max-height: 6.5em; overflow: hidden; }
 .xr-overlay .xr-piezas button { padding: .6em .9em; }
+
+/* Sesión 41: instalación y estado de conexión */
+.instalar-zona { width: 100%; max-width: 44em; padding: 0 1em; box-sizing: border-box; }
+.instalar-zona h2 { font-size: 1.1em; margin: 1em 0 .5em; }
+.instalar-barra { display: flex; flex-wrap: wrap; gap: .6em; align-items: center; }
+.instalar-barra button { background: #f4c542; color: #0b1220; border: 0; border-radius: 8px; padding: .55em 1em; cursor: pointer; font-size: .9em; font-weight: 600; }
+.instalar-barra button:disabled { opacity: .5; cursor: not-allowed; }
+.estado-instalacion { font-size: .85em; color: #b9b49f; flex: 1 1 14em; line-height: 1.4; }
+.estado-conexion { position: sticky; top: 0; z-index: 20; width: 100%; box-sizing: border-box; margin: 0; padding: .5em 1em; text-align: center; font-size: .85em; background: #5b3a12; color: #ffe9c2; border-bottom: 1px solid #a8741f; }
+.estado-conexion[hidden] { display: none; }

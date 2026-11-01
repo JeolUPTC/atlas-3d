@@ -9,6 +9,7 @@
     <link rel="manifest" href="/manifest.json" />
   </head>
   <body>
+    <p id="estado-conexion" class="estado-conexion" role="status" hidden></p>
     <section class="visor-zona">
       <div class="visor-barra">
         <button type="button" id="btn-orientacion">📱 Rotar con el teléfono</button>
@@ -35,6 +36,13 @@
         <button type="button" id="btn-recomprobar">Comprobar de nuevo</button>
       </details>
       <p class="aviso-demo">Toca una pieza para ver qué hace; arrastra para girar la vista. Con la cámara de fondo NO es realidad aumentada: el modelo solo se dibuja encima del video. El botón «Ver en AR» abre una sesión WebXR real: el anillo verde busca una superficie, tocas para apoyar el modelo y lo mueves, giras y escalas con los dedos; con ◀ ▶ recorres sus piezas.</p>
+    </section>
+    <section class="instalar-zona" aria-labelledby="titulo-instalar">
+      <h2 id="titulo-instalar">Instalar la app</h2>
+      <div class="instalar-barra">
+        <button type="button" id="btn-instalar" hidden>⬇ Instalar Atlas 3D</button>
+        <span id="estado-instalacion" class="estado-instalacion" role="status"></span>
+      </div>
     </section>
     <section class="descargas-zona" aria-labelledby="titulo-descargas">
       <h2 id="titulo-descargas">Uso sin conexión</h2>

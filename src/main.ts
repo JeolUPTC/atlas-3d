@@ -19,6 +19,8 @@ import { ETIQUETA_SYNC, descargarPendientes, leerFicha } from "./descargas";
 import { CATALOGO, modeloPorId } from "./modelos";
 import { ROLES, type Ficha } from "./modelos/tipos";
 import { describirRastro, leerRastro, PASO_FINAL } from "./rastro";
+import { estadoInstalacion, iniciarInstalacion, instalacionRechazada, pedirInstalacion } from "./instalar";
+import { iniciarConexion } from "./conexion";
 import { diagnosticarAR, mensajeSoporteAR, pedirSesionAR, describirErrorAR } from "./xr";
 import { iniciarCamaraDeFondo, detenerCamaraDeFondo, describirErrorCamara } from "./camara";
 
@@ -567,6 +569,60 @@ btnSalirAR.addEventListener("beforexrselect", (e) => e.preventDefault());
 
 btnSalirAR.addEventListener("click", () => {
   void sesionAR?.end();
+});
+
+// ── Sesión 41: instalación y estado de conexión ────────────────────────────────
+const btnInstalar = document.querySelector<HTMLButtonElement>("#btn-instalar")!;
+const estadoInstalacionEl = document.querySelector<HTMLElement>("#estado-instalacion")!;
+const estadoConexionEl = document.querySelector<HTMLElement>("#estado-conexion")!;
+
+const TEXTO_INSTALACION = {
+  instalada: "✓ Estás usando Atlas 3D como app instalada.",
+  recienInstalada: "✓ Instalada. Ábrela desde su icono en la pantalla de inicio.",
+  instalable: "Puedes instalarla: se abre a pantalla completa, desde su icono, y funciona sin conexión.",
+  ios: "En iPhone y iPad no hay botón: en Safari toca Compartir y luego «Añadir a pantalla de inicio».",
+  noDisponible: "Este navegador no ofrece instalar desde la página. Si ya la instalaste, ábrela desde su icono; si no, usa el menú del navegador → «Instalar app».",
+  rechazada: "Cancelaste la instalación. Chrome decide cuándo volver a ofrecerla; mientras tanto, usa el menú ⋮ → «Instalar app».",
+};
+
+function pintarInstalacion(): void {
+  const estado = estadoInstalacion();
+  btnInstalar.hidden = estado !== "instalable";
+  estadoInstalacionEl.textContent =
+    estado === "instalada" ? TEXTO_INSTALACION.instalada
+    : estado === "recien-instalada" ? TEXTO_INSTALACION.recienInstalada
+    : estado === "instalable" ? TEXTO_INSTALACION.instalable
+    : estado === "ios" ? TEXTO_INSTALACION.ios
+    : instalacionRechazada() ? TEXTO_INSTALACION.rechazada
+    : TEXTO_INSTALACION.noDisponible;
+}
+
+btnInstalar.addEventListener("click", async () => {
+  btnInstalar.disabled = true;
+  try {
+    await pedirInstalacion(); // el resultado lo pinta pintarInstalacion() vía iniciarInstalacion
+  } finally {
+    btnInstalar.disabled = false;
+  }
+});
+iniciarInstalacion(pintarInstalacion);
+
+let estuvoSinConexion = false;
+let temporizadorConexion: number | undefined;
+iniciarConexion((enLinea) => {
+  window.clearTimeout(temporizadorConexion);
+  if (!enLinea) {
+    estuvoSinConexion = true;
+    estadoConexionEl.hidden = false;
+    estadoConexionEl.textContent = "Sin conexión: los modelos y las fichas descargadas siguen disponibles.";
+  } else if (estuvoSinConexion) {
+    estuvoSinConexion = false;
+    estadoConexionEl.hidden = false;
+    estadoConexionEl.textContent = "Volvió la conexión.";
+    temporizadorConexion = window.setTimeout(() => { estadoConexionEl.hidden = true; }, 3000);
+  } else {
+    estadoConexionEl.hidden = true;
+  }
 });
 
 // Registro del Service Worker — Sesión 34. Desde la Sesión 37 el archivo es

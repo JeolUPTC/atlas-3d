@@ -1,4 +1,4 @@
-Atlas 3D de Arquitectura de Software — checkpoint al cierre de la Sesión 40
+Atlas 3D de Arquitectura de Software — checkpoint al cierre de la Sesión 41
 Electiva - PWA · UPTC (Sub-bloque B)
 
 Qué es esto
@@ -10,17 +10,16 @@ rótulos. Se ven en 3D en la página, se tocan para leer qué hace cada pieza y 
 apoyan en tu mesa con realidad aumentada (◀ ▶ recorren las piezas dentro de AR).
 Las fichas ampliadas (public/modelos/*.json) se descargan para usarlas sin conexión.
 
-Novedades de la Sesión 40
+Novedades de la Sesión 41
 --------------------------
-  src/modelos/tipos.ts          tipos: Pieza, Enlace, DefinicionModelo, Ficha; roles y colores
-  src/modelos/constructor.ts    construirModelo(def): piezas, flechas, rótulos, resaltar()
-  src/modelos/{mvc,capas,microservicios}.ts   los tres modelos, como datos
-  src/modelos/index.ts          CATALOGO y modeloPorId()
-  src/visor.ts                  mostrarModelo(), seleccionar(), toque sobre una pieza (raycaster)
-  src/main.ts                   panel del modelo, lista de piezas, ficha, ◀ ▶ en AR
-  src/db.ts                     IndexedDB v3: los identificadores de la demo pasan a mvc/capas/microservicios
-  src/descargas.ts              leerFicha(): caché → red → nada
-  public/modelos/*.json         fichas ampliadas (responsabilidad y «habla con» de cada pieza)
+  src/instalar.ts       beforeinstallprompt guardado y usado en un botón propio; modo instalado
+                        (display-mode: standalone); plan B manual para iOS
+  src/conexion.ts       estado de la conexión con los eventos online / offline
+  src/main.ts           botón «Instalar Atlas 3D», texto de estado y banda «Sin conexión»
+  index.html            zona «Instalar la app» y banda de conexión
+  src/style.css         estilos de la zona de instalación y de la banda
+  src/modelos/microservicios.ts   rótulos: «Bus de mensajes» arriba y «Cliente» al frente; distancia 0.9
+  (de la Sesión 40: modelos como datos, visor, fichas, salida de AR defensiva con rastro)
 
 Cómo probarlo
 --------------
