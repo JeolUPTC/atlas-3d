@@ -2,6 +2,15 @@ import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
+  build: {
+    rollupOptions: {
+      output: {
+        // Sesión 42: Three.js (la mayor parte del peso) va en su propio archivo: el código de la app
+        // cambia cada sesión, Three.js casi nunca, y así son dos descargas que se pueden cachear por separado.
+        manualChunks: { three: ["three"] },
+      },
+    },
+  },
   plugins: [
     VitePWA({
       // El manifest ya existe a mano desde la Sesión 27 (public/manifest.json,

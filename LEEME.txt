@@ -1,4 +1,4 @@
-Atlas 3D de Arquitectura de Software — checkpoint al cierre de la Sesión 41
+Atlas 3D de Arquitectura de Software — checkpoint al cierre de la Sesión 42
 Electiva - PWA · UPTC (Sub-bloque B)
 
 Qué es esto
@@ -10,16 +10,18 @@ rótulos. Se ven en 3D en la página, se tocan para leer qué hace cada pieza y 
 apoyan en tu mesa con realidad aumentada (◀ ▶ recorren las piezas dentro de AR).
 Las fichas ampliadas (public/modelos/*.json) se descargan para usarlas sin conexión.
 
-Novedades de la Sesión 41
---------------------------
-  src/instalar.ts       beforeinstallprompt guardado y usado en un botón propio; modo instalado
-                        (display-mode: standalone); plan B manual para iOS
-  src/conexion.ts       estado de la conexión con los eventos online / offline
-  src/main.ts           botón «Instalar Atlas 3D», texto de estado y banda «Sin conexión»
-  index.html            zona «Instalar la app» y banda de conexión
-  src/style.css         estilos de la zona de instalación y de la banda
-  src/modelos/microservicios.ts   rótulos: «Bus de mensajes» arriba y «Cliente» al frente; distancia 0.9
-  (de la Sesión 40: modelos como datos, visor, fichas, salida de AR defensiva con rastro)
+Novedades de la Sesión 42 (Lighthouse y cierre)
+------------------------------------------------
+  index.html            <meta name="description"> y un <main> que envuelve el contenido
+  src/style.css         espacio reservado para lo que se dibuja con JavaScript (.visor con
+                        aspect-ratio, .modelo-panel con min-height): CLS de 0,523 a 0,05
+  src/visor.ts          dibujo bajo demanda: solo se dibuja un fotograma si algo cambió
+                        (variable «sucio»), no 60 veces por segundo con la escena quieta
+  vite.config.ts        Three.js en su propio paquete (manualChunks): dos descargas cacheables
+  (de la Sesión 41: instalación guiada y estado de conexión; de la 40: modelos como datos)
+
+Medido con Lighthouse 13 (móvil, mediana de 3 corridas, Chromium sin GPU):
+  rendimiento 51 → 82 · accesibilidad 98 → 100 · SEO 90 → 100 · CLS 0,523 → 0,05 · TBT 1786 → 608 ms
 
 Cómo probarlo
 --------------
