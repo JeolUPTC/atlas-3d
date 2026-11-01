@@ -18,6 +18,7 @@ import { estadoAvisos, pedirPermisoAvisos, mostrarAviso } from "./avisos";
 import { ETIQUETA_SYNC, descargarPendientes, leerFicha } from "./descargas";
 import { CATALOGO, modeloPorId } from "./modelos";
 import { ROLES, type Ficha } from "./modelos/tipos";
+import { describirRastro, leerRastro, PASO_FINAL } from "./rastro";
 import { diagnosticarAR, mensajeSoporteAR, pedirSesionAR, describirErrorAR } from "./xr";
 import { iniciarCamaraDeFondo, detenerCamaraDeFondo, describirErrorCamara } from "./camara";
 
@@ -461,10 +462,11 @@ const btnRecomprobar = document.querySelector<HTMLButtonElement>("#btn-recomprob
 async function comprobarAR(): Promise<void> {
   const { estado, lineas } = await diagnosticarAR();
   estadoAR.textContent = mensajeSoporteAR(estado);
-  diagAR.textContent = lineas.join("\n");
+  diagAR.textContent = [...lineas, sesionAR ? "Sesión de AR en curso." : describirRastro()].join("\n");
   if (!sesionAR) btnAR.disabled = estado !== "disponible";
   // Si no se puede, el diagnóstico se muestra abierto para ver qué comprobación falló.
-  detallesAR.open = estado !== "disponible";
+  const rastro = leerRastro();
+  detallesAR.open = estado !== "disponible" || (!sesionAR && rastro !== null && rastro.paso !== PASO_FINAL);
 }
 void comprobarAR();
 btnRecomprobar.addEventListener("click", () => void comprobarAR());

@@ -8,6 +8,7 @@ import { capacidadesDe, type CapacidadesAR } from "./xr";
 import { crearGestos } from "./gestos";
 import { construirModelo, type ModeloConstruido } from "./modelos/constructor";
 import type { DefinicionModelo } from "./modelos/tipos";
+import { anotar, PASO_FINAL } from "./rastro";
 
 export interface Visor {
   /** Fija la rotación objetivo del modelo (radianes). El visor la alcanza suavemente. */
@@ -134,6 +135,7 @@ export function crearVisor(contenedor: HTMLElement): Visor {
   let sesionAR: XRSession | null = null;
 
   async function entrarEnAR(sesion: XRSession, opciones: OpcionesAR): Promise<EstadoAR> {
+    anotar("entrada");
     cancelAnimationFrame(animacion); // en AR NO manda requestAnimationFrame: manda el reloj del visor XR
     renderer.xr.enabled = true;
     renderer.xr.setReferenceSpaceType("local");
@@ -348,15 +350,21 @@ export function crearVisor(contenedor: HTMLElement): Visor {
       renderer.render(escena, camara);
     });
 
+    anotar("activa");
     sesion.addEventListener(
       "end",
       () => {
+        // Cada paso se anota ANTES de hacerlo: si la pestaña muere, el último nombre dice dónde.
+        anotar("fin-1-bucle");
         renderer.setAnimationLoop(null);
         renderer.xr.enabled = false;
         sesionAR = null;
         gestos.destruir();
-        fuente?.cancel();
-        ancla?.delete();
+        anotar("fin-2-fuente");
+        try { fuente?.cancel(); } catch { /* la sesión ya terminó */ }
+        anotar("fin-3-ancla");
+        try { ancla?.delete(); } catch { /* idem */ }
+        anotar("fin-4-escena");
         escena.remove(reticula);
         reticula.geometry.dispose();
         (reticula.material as THREE.Material).dispose();
@@ -369,9 +377,17 @@ export function crearVisor(contenedor: HTMLElement): Visor {
         grupo.scale.setScalar(ESCALA_VISTA);
         if (modelo) modelo.raiz.position.y = -centroY;
         grupo.rotation.set(0, 0, 0);
-        ajustarTamano(); // el visor XR cambió el tamaño del canvas
-        bucle(); // vuelve el requestAnimationFrame normal
         opciones.alTerminar();
+        // El primer fotograma normal NO se dibuja en el mismo instante en que el navegador desmonta
+        // la cámara y el visor XR: se espera un momento para que termine de soltar sus recursos.
+        anotar("fin-5-espera");
+        window.setTimeout(() => {
+          anotar("fin-6-tamano");
+          ajustarTamano(); // el visor XR cambió el tamaño del canvas
+          anotar("fin-7-bucle");
+          bucle(); // vuelve el requestAnimationFrame normal
+          anotar(PASO_FINAL);
+        }, 250);
       },
       { once: true }
     );
