@@ -10,64 +10,7 @@
     <link rel="manifest" href="/manifest.json" />
   </head>
   <body>
-    <p id="estado-conexion" class="estado-conexion" role="status" hidden></p>
-    <main class="contenido">
-    <section class="visor-zona">
-      <div class="visor-barra">
-        <button type="button" id="btn-orientacion">📱 Rotar con el teléfono</button>
-        <button type="button" id="btn-calibrar" disabled>Calibrar</button>
-        <button type="button" id="btn-camara">📷 Cámara de fondo</button>
-        <button type="button" id="btn-ar" disabled>🥽 Ver en AR</button>
-        <span id="lectura-visor" class="lectura-visor"></span>
-      </div>
-      <p id="aviso-visor" class="aviso-visor" role="status" hidden></p>
-      <div id="visor" class="visor">
-        <video id="fondo-camara" class="fondo-camara" playsinline muted hidden></video>
-      </div>
-      <section class="modelo-panel" aria-label="Modelo de arquitectura">
-        <div class="modelo-tabs" id="tabs-modelo" role="group" aria-label="Elegir modelo"></div>
-        <p id="modelo-resumen" class="modelo-resumen"></p>
-        <div id="leyenda" class="leyenda" aria-label="Leyenda de colores"></div>
-        <div id="chips-piezas" class="chips" role="group" aria-label="Piezas del modelo"></div>
-        <div id="pieza-detalle" class="pieza-detalle" aria-live="polite"></div>
-      </section>
-      <p id="estado-ar" class="estado-ar" role="status">Comprobando realidad aumentada…</p>
-      <details class="diag-ar">
-        <summary>Diagnóstico de realidad aumentada</summary>
-        <pre id="diag-ar" class="diag-ar-texto"></pre>
-        <button type="button" id="btn-recomprobar">Comprobar de nuevo</button>
-      </details>
-      <p class="aviso-demo">Toca una pieza para ver qué hace; arrastra para girar la vista. Con la cámara de fondo NO es realidad aumentada: el modelo solo se dibuja encima del video. El botón «Ver en AR» abre una sesión WebXR real: el anillo verde busca una superficie, tocas para apoyar el modelo y lo mueves, giras y escalas con los dedos; con ◀ ▶ recorres sus piezas.</p>
-    </section>
-    <section class="instalar-zona" aria-labelledby="titulo-instalar">
-      <h2 id="titulo-instalar">Instalar la app</h2>
-      <div class="instalar-barra">
-        <button type="button" id="btn-instalar" hidden>⬇ Instalar Atlas 3D</button>
-        <span id="estado-instalacion" class="estado-instalacion" role="status"></span>
-      </div>
-    </section>
-    <section class="descargas-zona" aria-labelledby="titulo-descargas">
-      <h2 id="titulo-descargas">Uso sin conexión</h2>
-      <div class="descargas-barra">
-        <button type="button" id="btn-avisos">🔔 Activar avisos</button>
-        <button type="button" id="btn-descargar">⬇ Descargar fichas para usar sin conexión</button>
-        <span id="estado-avisos" class="estado-avisos"></span>
-      </div>
-      <progress id="progreso-descarga" max="3" value="0" hidden></progress>
-      <p id="estado-descarga" class="estado-descarga" role="status"></p>
-    </section>
-    </main>
-    <div id="xr-overlay" class="xr-overlay">
-      <p id="xr-estado">Sesión de realidad aumentada activa</p>
-      <p id="xr-datos" class="xr-datos"></p>
-      <div class="xr-piezas">
-        <button type="button" id="btn-pieza-ant" aria-label="Pieza anterior">◀</button>
-        <p id="xr-pieza" class="xr-pieza"></p>
-        <button type="button" id="btn-pieza-sig" aria-label="Pieza siguiente">▶</button>
-      </div>
-      <button type="button" id="btn-salir-ar">Salir de AR</button>
-    </div>
-    <div id="app"></div>
-    <script type="module" src="/src/main.ts"></script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

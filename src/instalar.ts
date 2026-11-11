@@ -46,24 +46,35 @@ export function instalacionRechazada(): boolean {
   return rechazada;
 }
 
-/** Empieza a escuchar. «alCambiar» se llama cada vez que el estado puede haber cambiado. */
-export function iniciarInstalacion(alCambiar: () => void): void {
+/** Empieza a escuchar. «alCambiar» se llama cada vez que el estado puede haber cambiado. Devuelve cómo dejar de escuchar. */
+export function iniciarInstalacion(alCambiar: () => void): () => void {
   avisar = alCambiar;
-  window.addEventListener("beforeinstallprompt", (e) => {
+  const alOfrecer = (e: Event) => {
     // Sin esto, Chrome móvil muestra su propia barrita de «Instalar». Se guarda para usarlo en NUESTRO botón.
     e.preventDefault();
     evento = e as EventoInstalacion;
     rechazada = false;
     avisar();
-  });
-  window.addEventListener("appinstalled", () => {
+  };
+  const alInstalar = () => {
     evento = null; // ya no sirve
     recienInstalada = true;
     avisar();
-  });
+  };
   // Cambiar entre pestaña del navegador y ventana de app también cambia el modo de visualización.
-  window.matchMedia("(display-mode: standalone)").addEventListener("change", () => avisar());
+  const modo = window.matchMedia("(display-mode: standalone)");
+  const alCambiarModo = () => avisar();
+  window.addEventListener("beforeinstallprompt", alOfrecer);
+  window.addEventListener("appinstalled", alInstalar);
+  modo.addEventListener("change", alCambiarModo);
   avisar();
+  // Sesión 43: en React todo efecto que empieza algo debe saber deshacerlo.
+  return () => {
+    window.removeEventListener("beforeinstallprompt", alOfrecer);
+    window.removeEventListener("appinstalled", alInstalar);
+    modo.removeEventListener("change", alCambiarModo);
+    avisar = () => {};
+  };
 }
 
 /** Abre el diálogo del sistema. Solo funciona dentro de un clic y una sola vez por evento. */

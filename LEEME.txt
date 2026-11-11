@@ -1,4 +1,4 @@
-Atlas 3D de Arquitectura de Software — checkpoint al cierre de la Sesión 42
+Atlas 3D de Arquitectura de Software — checkpoint al cierre de la Sesión 43 (versión con React)
 Electiva - PWA · UPTC (Sub-bloque B)
 
 Qué es esto
@@ -10,22 +10,29 @@ rótulos. Se ven en 3D en la página, se tocan para leer qué hace cada pieza y 
 apoyan en tu mesa con realidad aumentada (◀ ▶ recorren las piezas dentro de AR).
 Las fichas ampliadas (public/modelos/*.json) se descargan para usarlas sin conexión.
 
-Novedades de la Sesión 42 (Lighthouse y cierre)
-------------------------------------------------
-  index.html            <meta name="description"> y un <main> que envuelve el contenido
-  src/style.css         espacio reservado para lo que se dibuja con JavaScript (.visor con
-                        aspect-ratio, .modelo-panel con min-height): CLS de 0,523 a 0,05
-  src/visor.ts          dibujo bajo demanda: solo se dibuja un fotograma si algo cambió
-                        (variable «sucio»), no 60 veces por segundo con la escena quieta
-  vite.config.ts        Three.js en su propio paquete (manualChunks): dos descargas cacheables
-  (de la Sesión 41: instalación guiada y estado de conexión; de la 40: modelos como datos)
+Novedades de la Sesión 43 (el Atlas en React)
+----------------------------------------------
+  src/main.tsx          monta <App /> en #root dentro de React.StrictMode (reemplaza a main.ts)
+  src/App.tsx           el árbol: visor, instalación, descargas, overlay de AR y catálogo
+  src/hooks/            la lógica sin pantalla: usePanel, useSensores, useCamara, useAR,
+                        useConexion, useInstalacion (useSyncExternalStore) y useProgreso
+  src/componentes/      ZonaVisor, PanelModelo, OverlayAR, ZonaInstalar, ZonaDescargas, Catalogo
+  src/instalar.ts       iniciarInstalacion() ahora devuelve cómo dejar de escuchar (limpieza del efecto)
+  vite.config.ts        plugin de React; React en su propio paquete; el Service Worker lo registra
+                        useRegisterSW (virtual:pwa-register/react)
+  index.html            solo <div id="root">; todo lo demás lo dibuja React
+  SIN CAMBIOS           visor.ts, xr.ts, sw.ts, db.ts, crypto.ts, descargas.ts, modelos/, manifest.json
+  Los ids y las clases del DOM son los mismos: las pruebas de las sesiones 39 a 42 pasan sin tocarlas.
 
-Medido con Lighthouse 13 (móvil, mediana de 3 corridas, Chromium sin GPU):
-  rendimiento 51 → 82 · accesibilidad 98 → 100 · SEO 90 → 100 · CLS 0,523 → 0,05 · TBT 1786 → 608 ms
+Medido (Lighthouse 13, móvil, mediana de 5 corridas, Chromium sin GPU):
+  S42: rendimiento 83 · FCP 1708 ms · LCP 2290 ms · TBT 554 ms
+  S43: rendimiento 91 · FCP 2248 ms · LCP 2393 ms · TBT 253 ms
+  JS: de 558,82 KiB a 778,17 KiB de precaché (React: 221,71 kB sin comprimir).
 
 Cómo probarlo
 --------------
   npm install
+  npm run dev          (desarrollo con StrictMode: cada efecto se monta, se desmonta y se vuelve a montar)
   npm run build        (compila src/sw.ts y la app)
   npm run preview      → http://localhost:4173
 

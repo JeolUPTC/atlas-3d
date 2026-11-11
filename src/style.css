@@ -211,3 +211,6 @@ body {
 /* El visor también se llena con JavaScript (el canvas llega tarde): su alto se reserva con la misma
    proporción que usa visor.ts (alto = 0,75 × ancho, máximo 560 px). Sin esto, todo lo de abajo saltaba. */
 .visor { aspect-ratio: 4 / 3; max-height: 560px; }
+
+/* Sesión 43: React monta todo dentro de #root; sin esto el contenedor extra rompería la columna centrada del body. */
+#root { width: 100%; display: flex; flex-direction: column; align-items: center; }
