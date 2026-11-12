@@ -1,4 +1,1 @@
-// Solo para compilar src/sw.ts: Vite reemplaza import.meta.env.BASE_URL al empaquetar.
-interface ImportMeta {
-  readonly env: { readonly BASE_URL: string };
-}
+// Solo para compilar src/sw.ts: el precaché se inyecta después de compilar (scripts/build-sw.mjs).

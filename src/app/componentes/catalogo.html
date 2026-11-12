@@ -1,0 +1,9 @@
+<h1>Atlas 3D de Arquitectura de Software</h1>
+<p class="aviso-demo">
+  Marca cada modelo como visto, guárdalo como favorito o escribe una nota de estudio (se cifra en tu dispositivo).
+</p>
+<div class="modelos-grid">
+  @for (m of modelos; track m.id) {
+    <article tarjeta [modelo]="m" [destacada]="destacado === m.id"></article>
+  }
+</div>

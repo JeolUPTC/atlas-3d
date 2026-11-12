@@ -21,10 +21,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
       - run: npm install
-      # --base le dice a Vite en qué subruta vivirá la app: /nombre-del-repo/
-      - run: npm run build -- --base=/${{ github.event.repository.name }}/
+      # Angular 22 exige Node 22.22.3 o superior (por eso ya no es 20). --base-href dice en qué subruta vivirá la app.
+      - run: npm run build -- --base-href=/${{ github.event.repository.name }}/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

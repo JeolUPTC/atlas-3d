@@ -1,0 +1,38 @@
+<div class="modelo-tabs" id="tabs-modelo" role="group" aria-label="Elegir modelo">
+  @for (m of catalogo; track m.id) {
+    <button type="button" class="tab" [attr.data-id]="m.id" [attr.aria-pressed]="m.id === panel.def().id" (click)="panel.elegirModelo(m.id)">{{ m.nombre }}</button>
+  }
+</div>
+<p id="modelo-resumen" class="modelo-resumen">{{ panel.def().resumen }}</p>
+<div id="leyenda" class="leyenda" aria-label="Leyenda de colores">
+  @for (r of roles(); track r) {
+    <span class="leyenda-item"><i [style.background]="ROLES[r].css"></i>{{ ROLES[r].nombre }}</span>
+  }
+</div>
+<div id="chips-piezas" class="chips" role="group" aria-label="Piezas del modelo">
+  @for (p of panel.def().piezas; track p.id) {
+    <button type="button" class="chip" [attr.data-id]="p.id" [attr.aria-pressed]="p.id === panel.piezaId()" (click)="alElegirPieza(p.id)">
+      <i [style.background]="ROLES[p.rol].css"></i>{{ p.nombre }}
+    </button>
+  }
+</div>
+<div id="pieza-detalle" class="pieza-detalle" aria-live="polite">
+  @if (panel.pieza(); as pieza) {
+    <h3><i [style.background]="ROLES[pieza.rol].css"></i>{{ pieza.nombre }} <small>{{ ROLES[pieza.rol].nombre }}</small></h3>
+    <p>{{ pieza.resumen }}</p>
+    @if (extra(); as e) {
+      <p><b>Responsabilidad.</b> {{ e.responsabilidad }}</p>
+      <p><b>Habla con:</b> {{ nombresDe(panel.def(), e.habla_con) }}.</p>
+    } @else if (!panel.ficha()) {
+      <p class="nota-ficha">Detalle ampliado no disponible: descarga las fichas (abajo) para leerlo sin conexión.</p>
+    }
+  } @else {
+    <p>Toca una pieza del modelo, o elígela en la lista, para ver qué hace. Toca la misma pieza otra vez para soltarla.</p>
+    @if (panel.ficha(); as ficha) {
+      <p><b>Cuándo usarlo.</b> {{ ficha.cuando_usarlo }}</p>
+      <p><b>Riesgo.</b> {{ ficha.riesgo }}</p>
+    } @else {
+      <p class="nota-ficha">Detalle ampliado no disponible: descarga las fichas (abajo) para leerlo sin conexión.</p>
+    }
+  }
+</div>

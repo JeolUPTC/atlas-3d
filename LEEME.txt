@@ -1,4 +1,4 @@
-Atlas 3D de Arquitectura de Software — checkpoint al cierre de la Sesión 43 (versión con React)
+Atlas 3D de Arquitectura de Software — checkpoint al cierre de la Sesión 44 (versión con Angular)
 Electiva - PWA · UPTC (Sub-bloque B)
 
 Qué es esto
@@ -10,30 +10,32 @@ rótulos. Se ven en 3D en la página, se tocan para leer qué hace cada pieza y 
 apoyan en tu mesa con realidad aumentada (◀ ▶ recorren las piezas dentro de AR).
 Las fichas ampliadas (public/modelos/*.json) se descargan para usarlas sin conexión.
 
-Novedades de la Sesión 43 (el Atlas en React)
-----------------------------------------------
-  src/main.tsx          monta <App /> en #root dentro de React.StrictMode (reemplaza a main.ts)
-  src/App.tsx           el árbol: visor, instalación, descargas, overlay de AR y catálogo
-  src/hooks/            la lógica sin pantalla: usePanel, useSensores, useCamara, useAR,
-                        useConexion, useInstalacion (useSyncExternalStore) y useProgreso
-  src/componentes/      ZonaVisor, PanelModelo, OverlayAR, ZonaInstalar, ZonaDescargas, Catalogo
-  src/instalar.ts       iniciarInstalacion() ahora devuelve cómo dejar de escuchar (limpieza del efecto)
-  vite.config.ts        plugin de React; React en su propio paquete; el Service Worker lo registra
-                        useRegisterSW (virtual:pwa-register/react)
-  index.html            solo <div id="root">; todo lo demás lo dibuja React
-  SIN CAMBIOS           visor.ts, xr.ts, sw.ts, db.ts, crypto.ts, descargas.ts, modelos/, manifest.json
+Novedades de la Sesión 44 (el Atlas en Angular 22)
+---------------------------------------------------
+  src/main.ts              arranca el componente App con bootstrapApplication (13 líneas)
+  src/app/app.ts           el componente raíz; src/app/app.html su plantilla
+  src/app/servicios/       el estado y la lógica sin pantalla, como servicios con señales:
+                           Panel, Progreso, Visor, AR, Sensores, Camara, Conexion, Instalacion y Sw
+  src/app/componentes/     ZonaVisor, PanelModelo, OverlayAR, ZonaInstalar, ZonaDescargas,
+                           Catalogo y Tarjeta (cada uno con su .ts y su .html)
+  src/base.ts              la ruta base (Angular no define import.meta.env.BASE_URL como Vite)
+  src/index.html           solo <app-root>; todo lo demás lo dibuja Angular
+  scripts/build.mjs        ng build + comprobación de tipos del SW + empaquetado del SW propio
+  scripts/build-sw.mjs     empaqueta src/sw.ts (esbuild) y le inyecta el precaché (workbox-build)
+  .github/workflows/pages.yml  CAMBIÓ: Node 22 (Angular 22 exige 22.22.3 o superior) y --base-href
+  SIN CAMBIOS              visor.ts, xr.ts, sw.ts, db.ts, crypto.ts, modelos/, manifest.json
+  Cambios mínimos          avisos.ts, descargas.ts y sw.ts leen BASE_URL de base.ts;
+                           visor.service.ts carga visor.ts (y Three.js) con import() dinámico
   Los ids y las clases del DOM son los mismos: las pruebas de las sesiones 39 a 42 pasan sin tocarlas.
 
-Medido (Lighthouse 13, móvil, mediana de 5 corridas, Chromium sin GPU):
-  S42: rendimiento 83 · FCP 1708 ms · LCP 2290 ms · TBT 554 ms
-  S43: rendimiento 91 · FCP 2248 ms · LCP 2393 ms · TBT 253 ms
-  JS: de 558,82 KiB a 778,17 KiB de precaché (React: 221,71 kB sin comprimir).
+Medido (Lighthouse 13, móvil, mediana de 5 corridas, Chromium sin GPU): ver la guía de la sesión.
 
 Cómo probarlo
 --------------
+  Requiere Node 22.22.3 o superior (o 24.15 o superior): node -v
   npm install
-  npm run dev          (desarrollo con StrictMode: cada efecto se monta, se desmonta y se vuelve a montar)
-  npm run build        (compila src/sw.ts y la app)
+  npm run dev          (ng serve: desarrollo en http://localhost:4200, sin Service Worker)
+  npm run build        (ng build + Service Worker propio)  →  carpeta dist/
   npm run preview      → http://localhost:4173
 
   Hit-test y anclas necesitan un dispositivo AR. En el escritorio, el emulador
@@ -43,13 +45,18 @@ Cómo probarlo
 
 Verlo en un teléfono (GitHub Pages)
 ------------------------------------
-  El proyecto ya es compatible con subrutas (usuario.github.io/nombre-repo/):
-  nada usa rutas absolutas; todo cuelga de import.meta.env.BASE_URL.
+  El proyecto es compatible con subrutas (usuario.github.io/nombre-repo/):
+  nada usa rutas absolutas; todo cuelga de BASE_URL (src/base.ts).
   1. Crea un repositorio público y sube el proyecto (con .github/workflows).
   2. Settings → Pages → Source: GitHub Actions.
   3. Haz push a main: el flujo .github/workflows/pages.yml compila con
-     `npm run build -- --base=/nombre-del-repo/` y publica dist.
+     `npm run build -- --base-href=/nombre-del-repo/` y publica dist.
   4. Abre https://usuario.github.io/nombre-del-repo/ en Chrome del teléfono.
+
+Si vienes de la versión con React (Sesión 43)
+----------------------------------------------
+  Borra de tu carpeta todo lo que no sea .git (incluida node_modules y package-lock.json) y copia
+  aquí el contenido de este .zip: la estructura cambió por completo y los archivos viejos estorban.
 
 Limitaciones
 ------------

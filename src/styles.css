@@ -1,0 +1,217 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color-scheme: dark;
+  color: #e8e2cf;
+  background-color: #0b1220;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column; /* Sesión 35: visor arriba, demo de progreso debajo */
+  align-items: center;
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.arranque {
+  max-width: 32em;
+  padding: 2em;
+  text-align: center;
+}
+
+.arranque h1 {
+  font-size: 1.6em;
+  margin-bottom: 0.4em;
+}
+
+.arranque p {
+  color: #9a9a8c;
+}
+
+.atlas-demo {
+  max-width: 48em;
+  padding: 2em;
+}
+
+.atlas-demo h1 {
+  font-size: 1.5em;
+  margin-bottom: 0.2em;
+  text-align: center;
+}
+
+.aviso-demo {
+  color: #d9a441;
+  font-size: 0.85em;
+  text-align: center;
+  margin-bottom: 1.4em;
+}
+
+.modelos-grid {
+  display: grid;
+  gap: 1em;
+}
+
+.modelo-card {
+  border: 1px solid #27334a;
+  border-radius: 10px;
+  padding: 1em 1.2em;
+  background: #101a2c;
+}
+
+.modelo-card h2 {
+  font-size: 1em;
+  margin: 0 0 0.3em;
+}
+
+.modelo-card .meta {
+  color: #9a9a8c;
+  font-size: 0.8em;
+  margin: 0 0 0.6em;
+}
+
+.acciones {
+  display: flex;
+  gap: 0.5em;
+  flex-wrap: wrap;
+  margin-bottom: 0.6em;
+}
+
+.acciones button {
+  background: #1c2b45;
+  color: #e8e2cf;
+  border: 1px solid #27334a;
+  border-radius: 6px;
+  padding: 0.4em 0.7em;
+  font-size: 0.82em;
+  cursor: pointer;
+}
+
+.acciones button:hover {
+  background: #27334a;
+}
+
+.nota-zona {
+  display: flex;
+  gap: 0.4em;
+  flex-wrap: wrap;
+}
+
+.nota-input {
+  flex: 1 1 auto;
+  min-width: 10em;
+  padding: 0.4em 0.6em;
+  border: 1px solid #27334a;
+  border-radius: 6px;
+  background: #0b1220;
+  color: #e8e2cf;
+  font-size: 0.82em;
+}
+
+.nota-zona button {
+  background: none;
+  border: 1px solid #27334a;
+  border-radius: 6px;
+  padding: 0.4em 0.6em;
+  font-size: 0.78em;
+  color: #e8e2cf;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.nota-zona button:hover:not(:disabled) {
+  background: #1c2b45;
+}
+
+.nota-zona button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Sesión 35: visor 3D y controles de sensores */
+.visor-zona { max-width: 40em; margin: 1.2em auto 0; padding: 0 1em; }
+.visor { position: relative; width: 100%; border-radius: 12px; overflow: hidden; border: 1px solid #2a3550; background: #0b1220; }
+.visor canvas { position: relative; z-index: 1; display: block; width: 100%; touch-action: none; }
+.fondo-camara { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.fondo-camara[hidden] { display: none; }
+.visor-barra { display: flex; flex-wrap: wrap; gap: .5em; align-items: center; margin-bottom: .6em; }
+.visor-barra button { background: #162038; color: #e8e2cf; border: 1px solid #2a3550; border-radius: 8px; padding: .45em .8em; cursor: pointer; }
+.visor-barra button:disabled { opacity: .45; cursor: not-allowed; }
+.lectura-visor { font-size: .8em; color: #9fb0d0; font-variant-numeric: tabular-nums; }
+.aviso-visor { background: #3a2f10; border: 1px solid #b8860b; border-radius: 8px; padding: .5em .8em; font-size: .85em; }
+#app { width: 100%; }
+.visor-zona { width: 100%; box-sizing: border-box; }
+
+/* Sesión 37: avisos y descargas para uso sin conexión */
+.descargas-zona { width: 100%; max-width: 48em; padding: 0 2em; box-sizing: border-box; }
+.descargas-zona h2 { font-size: 1.1em; margin: 1em 0 .5em; }
+.descargas-barra { display: flex; flex-wrap: wrap; gap: .5em; align-items: center; }
+.descargas-barra button { background: #162033; color: #e8e2cf; border: 1px solid #2c3a55; border-radius: 8px; padding: .45em .8em; cursor: pointer; font-size: .85em; }
+.descargas-barra button:disabled { opacity: .45; cursor: not-allowed; }
+.estado-avisos, .estado-descarga { font-size: .8em; color: #9a9a8c; }
+.estado-descarga { margin: .4em 0 0; min-height: 1.2em; }
+#progreso-descarga { width: 100%; margin-top: .6em; }
+.modelo-card.destacada { outline: 2px solid #ffcc29; }
+.modelo-card .disponible { color: #7fd18b; }
+
+/* Sesión 38: realidad aumentada */
+.estado-ar { font-size: .8em; color: #9fb0d0; margin: .4em 0; }
+.diag-ar { font-size: .8em; color: #9fb0d0; margin: .2em 0 .6em; }
+.diag-ar summary { cursor: pointer; }
+.diag-ar-texto { margin: .5em 0; padding: .6em .8em; background: #0d1424; border-radius: 6px; white-space: pre-wrap; font-size: 1em; }
+.xr-overlay { display: none; touch-action: none; /* los gestos son nuestros: que el navegador no haga scroll ni zoom */ }
+/* Mientras dura la sesión, el navegador estira este elemento sobre toda la pantalla
+   (fondo transparente). Solo hay que decir cómo acomodar lo de adentro. */
+.xr-overlay:xr-overlay { display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: .6em; padding-bottom: 1.2em; box-sizing: border-box; }
+.xr-overlay p { margin: 0; background: rgba(11, 18, 32, .75); color: #e8e2cf; padding: .4em .8em; border-radius: 8px; font-size: .9em; }
+.xr-overlay .xr-datos { font: .72em ui-monospace, monospace; }
+.xr-overlay button { background: #ffcc29; color: #0b1220; border: 0; border-radius: 8px; padding: .7em 1.2em; font-weight: 700; cursor: pointer; }
+
+/* Una sola columna centrada: visor, avisos/descargas y lista de modelos con el mismo ancho */
+.visor-zona, .descargas-zona, .atlas-demo { width: 100%; max-width: 44em; margin-left: auto; margin-right: auto; padding-left: 1em; padding-right: 1em; box-sizing: border-box; }
+
+/* ── Sesión 40: panel del modelo ── */
+.modelo-panel { margin: .8em 0; }
+.modelo-tabs { display: flex; flex-wrap: wrap; gap: .4em; }
+.modelo-tabs .tab { background: #16233a; color: #e8e2cf; border: 1px solid #2a3b5c; border-radius: 999px; padding: .45em .9em; cursor: pointer; font-size: .9em; }
+.modelo-tabs .tab[aria-pressed="true"] { background: #ffcc29; color: #0b1220; border-color: #ffcc29; font-weight: 700; }
+.modelo-resumen { margin: .6em 0 .3em; color: #cfd7e8; font-size: .92em; }
+.leyenda { display: flex; flex-wrap: wrap; gap: .3em .9em; font-size: .78em; color: #9fb0cf; margin-bottom: .5em; }
+.leyenda-item i, .chip i, .pieza-detalle h3 i { display: inline-block; width: .8em; height: .8em; border-radius: 50%; margin-right: .4em; vertical-align: -.05em; }
+.chips { display: flex; flex-wrap: wrap; gap: .35em; }
+.chip { background: #16233a; color: #e8e2cf; border: 1px solid #2a3b5c; border-radius: 8px; padding: .35em .65em; cursor: pointer; font-size: .82em; }
+.chip[aria-pressed="true"] { border-color: #ffcc29; box-shadow: 0 0 0 1px #ffcc29 inset; background: #1f3050; }
+.pieza-detalle { margin-top: .7em; padding: .7em .9em; background: #111b2e; border: 1px solid #22314f; border-radius: 10px; font-size: .9em; line-height: 1.45; min-height: 4.5em; }
+.pieza-detalle h3 { margin: 0 0 .3em; font-size: 1em; }
+.pieza-detalle h3 small { color: #9fb0cf; font-weight: 400; margin-left: .4em; }
+.pieza-detalle p { margin: .3em 0; }
+.nota-ficha { color: #d9a441; font-size: .85em; }
+.resumen-card { margin: .2em 0 .4em; color: #b9c4dc; font-size: .88em; }
+.xr-overlay .xr-piezas { display: flex; align-items: center; gap: .4em; max-width: 94%; }
+.xr-overlay .xr-piezas .xr-pieza { flex: 1; font-size: .82em; max-height: 6.5em; overflow: hidden; }
+.xr-overlay .xr-piezas button { padding: .6em .9em; }
+
+/* Sesión 41: instalación y estado de conexión */
+.instalar-zona { width: 100%; max-width: 44em; padding: 0 1em; box-sizing: border-box; }
+.instalar-zona h2 { font-size: 1.1em; margin: 1em 0 .5em; }
+.instalar-barra { display: flex; flex-wrap: wrap; gap: .6em; align-items: center; }
+.instalar-barra button { background: #f4c542; color: #0b1220; border: 0; border-radius: 8px; padding: .55em 1em; cursor: pointer; font-size: .9em; font-weight: 600; }
+.instalar-barra button:disabled { opacity: .5; cursor: not-allowed; }
+.estado-instalacion { font-size: .85em; color: #b9b49f; flex: 1 1 14em; line-height: 1.4; }
+.estado-conexion { position: sticky; top: 0; z-index: 20; width: 100%; box-sizing: border-box; margin: 0; padding: .5em 1em; text-align: center; font-size: .85em; background: #5b3a12; color: #ffe9c2; border-bottom: 1px solid #a8741f; }
+.estado-conexion[hidden] { display: none; }
+
+/* Sesión 42: hallazgos de Lighthouse */
+/* <main>: el punto de referencia que faltaba; mantiene la misma columna centrada que el body. */
+.contenido { width: 100%; display: flex; flex-direction: column; align-items: center; }
+/* El panel del modelo se llena con JavaScript: se le reserva su alto desde el principio
+   para que lo de abajo no «salte» cuando aparece (era el 90 % del desplazamiento de diseño). */
+.modelo-panel { min-height: 25em; }
+/* El visor también se llena con JavaScript (el canvas llega tarde): su alto se reserva con la misma
+   proporción que usa visor.ts (alto = 0,75 × ancho, máximo 560 px). Sin esto, todo lo de abajo saltaba. */
+.visor { aspect-ratio: 4 / 3; max-height: 560px; }
+
+/* Sesión 44: <app-root> es el elemento que crea Angular; con display: contents no cuenta en el diseño y
+   el body sigue centrando en columna a sus hijos de siempre. */
+app-root { display: contents; }

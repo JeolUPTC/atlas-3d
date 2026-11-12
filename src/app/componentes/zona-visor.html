@@ -1,0 +1,23 @@
+<div class="visor-barra">
+  <button type="button" id="btn-orientacion" (click)="sensores.alternar()">
+    {{ sensores.activo() ? "📱 Sensores: ACTIVOS (toca para apagar)" : "📱 Rotar con el teléfono" }}
+  </button>
+  <button type="button" id="btn-calibrar" [disabled]="!sensores.activo()" (click)="sensores.calibrar()">Calibrar</button>
+  <button type="button" id="btn-camara" (click)="camara.alternar()">
+    {{ camara.activa() ? "📷 Cámara: ACTIVA (toca para apagar)" : "📷 Cámara de fondo" }}
+  </button>
+  <button type="button" id="btn-ar" [disabled]="!ar.puedeEntrar()" (click)="ar.entrar()">🥽 Ver en AR</button>
+  <span id="lectura-visor" class="lectura-visor">{{ sensores.lectura() }}</span>
+</div>
+<p id="aviso-visor" class="aviso-visor" role="status" [hidden]="!visorSvc.aviso()">{{ visorSvc.aviso() }}</p>
+<div id="visor" class="visor" #contenedor>
+  <video id="fondo-camara" class="fondo-camara" [playsInline]="true" [muted]="true" [hidden]="!camara.activa()" #video></video>
+</div>
+<section panelModelo></section>
+<p id="estado-ar" class="estado-ar" role="status">{{ ar.estado() }}</p>
+<details class="diag-ar" [open]="ar.diagAbierto()" (toggle)="alAlternarDiagnostico($event)">
+  <summary>Diagnóstico de realidad aumentada</summary>
+  <pre id="diag-ar" class="diag-ar-texto">{{ ar.diagnostico() }}</pre>
+  <button type="button" id="btn-recomprobar" (click)="ar.comprobar()">Comprobar de nuevo</button>
+</details>
+<p class="aviso-demo">Toca una pieza para ver qué hace; arrastra para girar la vista. Con la cámara de fondo NO es realidad aumentada: el modelo solo se dibuja encima del video. El botón «Ver en AR» abre una sesión WebXR real: el anillo verde busca una superficie, tocas para apoyar el modelo y lo mueves, giras y escalas con los dedos; con ◀ ▶ recorres sus piezas.</p>

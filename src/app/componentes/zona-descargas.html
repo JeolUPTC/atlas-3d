@@ -1,0 +1,8 @@
+<h2 id="titulo-descargas">Uso sin conexión</h2>
+<div class="descargas-barra">
+  <button type="button" id="btn-avisos" [disabled]="permiso() !== 'default'" (click)="activarAvisos()">🔔 Activar avisos</button>
+  <button type="button" id="btn-descargar" [disabled]="ocupado()" (click)="descargar()">⬇ Descargar fichas para usar sin conexión</button>
+  <span id="estado-avisos" class="estado-avisos">{{ textoAvisos() }}</span>
+</div>
+<progress id="progreso-descarga" [max]="progreso()?.total ?? 3" [value]="progreso()?.hechos ?? 0" [hidden]="progreso() === null"></progress>
+<p id="estado-descarga" class="estado-descarga" role="status">{{ mensaje() }}</p>

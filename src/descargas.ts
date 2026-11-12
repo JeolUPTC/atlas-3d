@@ -5,11 +5,12 @@
 // diferencia del Gestor (Sesión 26), cuyo SW clásico no podía importar módulos.
 import { obtenerDescargas, marcarDescargaLista } from "./db";
 import type { Ficha } from "./modelos/tipos";
+import { BASE_URL } from "./base";
 
 export const ETIQUETA_SYNC = "descargar-modelos";
 export const CACHE_MODELOS = "modelos-3d";
 // BASE_URL vale «/» en local y «/nombre-del-repo/» en GitHub Pages: nunca escribas rutas absolutas a mano.
-export const urlDeModelo = (id: string) => `${import.meta.env.BASE_URL}modelos/${id}.json`;
+export const urlDeModelo = (id: string) => `${BASE_URL}modelos/${id}.json`;
 
 export type AlProgresar = (hechos: number, total: number) => void | Promise<void>;
 

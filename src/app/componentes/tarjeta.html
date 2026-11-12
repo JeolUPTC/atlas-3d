@@ -1,0 +1,18 @@
+<h2>{{ modelo().nombre }}</h2>
+<p class="resumen-card">{{ modelo().resumen }}</p>
+<p class="meta">
+  Última visita: {{ ultimaVisita() }}
+  @if (descargado()) { · <span class="disponible">✓ disponible sin conexión</span> }
+</p>
+<div class="acciones">
+  <button class="btn-ver3d" [attr.data-id]="modelo().id" (click)="ver3D()">🧊 Ver en 3D</button>
+  <button class="btn-visitar" [attr.data-id]="modelo().id" (click)="progresoSvc.marcarVisto(modelo().id)">Marcar como visto</button>
+  <button class="btn-favorito" [attr.data-id]="modelo().id" (click)="progresoSvc.alternarFavorito(modelo().id)">
+    {{ progreso()?.favorito ? "★ Favorito" : "☆ Marcar favorito" }}
+  </button>
+</div>
+<div class="nota-zona">
+  <input type="text" class="nota-input" placeholder="Nota de estudio..." [(ngModel)]="nota" />
+  <button class="btn-guardar-nota" [attr.data-id]="modelo().id" (click)="guardar()">🔒 Guardar nota</button>
+  <button class="btn-ver-nota" [attr.data-id]="modelo().id" [disabled]="!progreso()?.notaCifrada" (click)="progresoSvc.verNota(modelo().id)">👁 Ver nota</button>
+</div>

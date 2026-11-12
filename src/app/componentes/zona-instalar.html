@@ -1,0 +1,5 @@
+<h2 id="titulo-instalar">Instalar la app</h2>
+<div class="instalar-barra">
+  <button type="button" id="btn-instalar" [hidden]="!inst.instalable()" [disabled]="pidiendo()" (click)="alPulsar()">⬇ Instalar Atlas 3D</button>
+  <span id="estado-instalacion" class="estado-instalacion" role="status">{{ inst.texto() }}</span>
+</div>

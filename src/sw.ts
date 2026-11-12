@@ -10,6 +10,7 @@ import { ExpirationPlugin } from "workbox-expiration";
 import { clientsClaim } from "workbox-core";
 import { abrirBaseDeDatos } from "./db";
 import { descargarPendientes, ETIQUETA_SYNC } from "./descargas";
+import { BASE_URL } from "./base";
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -27,7 +28,7 @@ cleanupOutdatedCaches();
 precacheAndRoute(self.__WB_MANIFEST);
 
 // Ruta base de la app: «/» en local, «/nombre-del-repo/» en GitHub Pages.
-const BASE = import.meta.env.BASE_URL;
+const BASE = BASE_URL;
 
 registerRoute(
   ({ url }) => url.pathname.startsWith(BASE + "iconos/"),
